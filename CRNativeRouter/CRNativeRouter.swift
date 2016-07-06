@@ -8,13 +8,9 @@
 
 import UIKit
 
-enum CRNativeRouterError {
-    case unavailableFormat
-}
-
 infix operator =~ {
-    associativity left
-    precedence 160
+    associativity none
+    precedence 130
 }
 
 func =~ (lhs: String, rhs: String) -> Bool {
@@ -33,17 +29,29 @@ protocol CRNativeRouterProtocol {
 
 class CRNativeRouter: NSObject {
     
+    // 视图控制器类型枚举
+    private enum CRNativeRouterViewControllerType {
+        case normal(type: AnyClass)
+        case nib(type: AnyClass, name: String)
+        case storyboard(type: AnyClass, name: String, identifier: String)
+    }
+    
+    // 参数字典数据键值
     private let CRNativeRouterTypeKey = "CRNativeRouterTypeKey"
     private let CRNativeRouterModuleKey = "CRNativeRouterModuleKey"
     private let CRNativeRouterParametersKey = "CRNativeRouterParametersKey"
     
-    private var navigationController: UINavigationController? = nil
+    // 导航栏
+    private var navigationController: UINavigationController
     
-    private var mapClass: [String:AnyClass] = [:]
+    // 映射关系
+    private var mapClass: [String:CRNativeRouterViewControllerType] = [:]
     private var mapParameters: [String:[String]] = [:]
     
+    // 预设的URL匹配正则表达式
     private var regularFormat = "^(Medical://)(\\w+\\.md)(\\?(([a-zA-Z]+\\w*=\\w+)(&[a-zA-Z]+\\w*=\\w+)*)|([a-zA-Z]+\\w*=\\w+))?$"
     
+    // 单例
     private struct Static {
         static var instance: CRNativeRouter! = nil
         static var predicate: dispatch_once_t = 0
@@ -68,13 +76,29 @@ class CRNativeRouter: NSObject {
      初始化函数
      */
     internal required override init() {
+        navigationController = UINavigationController()
+        
         super.init()
     }
     
+    /**
+     判断URL是否符合预设的正则表达式
+     
+     - parameter url: URL
+     
+     - returns: 比较结果
+     */
     private func judgeUrlAvailable(url: String) -> Bool {
         return url =~ regularFormat
     }
     
+    /**
+     分离URL中的模块名称和参数队列
+     
+     - parameter url: URL
+     
+     - returns: 分离后的字典数据
+     */
     private func divideComponentsFromUrl(url: String) -> [String:String] {
         var compResult: [String:String] = [:]
         
@@ -101,18 +125,45 @@ class CRNativeRouter: NSObject {
                 compResult[CRNativeRouterParametersKey] = url.substringWithRange(range)
             }
         } catch {
-            
+            // exception catched
         }
         
         return compResult
     }
     
+    /**
+     通过module名称映射到对应的视图控制器
+     
+     - parameter module: module名称
+     
+     - returns: 对应的视图控制器
+     */
     private func reflectViewController(module: String) -> UIViewController? {
-        guard let type = mapClass[module] where type is UIViewController.Type else { return nil }
+        guard let type = mapClass[module] else { return nil }
         
-        return (type as! UIViewController.Type).init()
+        var viewController: UIViewController? = nil
+        
+        switch type {
+        case .normal(let vcType):
+            viewController = (vcType as! UIViewController.Type).init()
+        case .nib(let vcType, let nib):
+            viewController = (vcType as! UIViewController.Type).init(nibName: nib, bundle: nil)
+        case .storyboard(_, let name, let identifier):
+            let storyboard = UIStoryboard(name: name, bundle: nil)
+            viewController = storyboard.instantiateViewControllerWithIdentifier(identifier)
+        }
+        
+        return viewController
     }
     
+    /**
+     视图控制器参数校验
+     
+     - parameter module:    module名称
+     - parameter parameter: URL中的参数队列字符串
+     
+     - returns: 校验结果
+     */
     private func viewControllerParametersCheck(module: String, parameter: String) -> Bool {
         guard let requiredList = mapParameters[module] else { return false }
         
@@ -134,6 +185,13 @@ class CRNativeRouter: NSObject {
         return result
     }
     
+    /**
+     生成视图控制器参数对应的字典数据
+     
+     - parameter parameter: 参数队列字符串
+     
+     - returns: 参数字典数据
+     */
     private func viewControllerParameterGenerate(parameter: String) -> [String:AnyObject] {
         let components = parameter.componentsSeparatedByString("&")
         var params: [String:AnyObject] = [:]
@@ -159,26 +217,36 @@ class CRNativeRouter: NSObject {
      设置统跳URL格式，以正则表达式表示
      内部使用固定格式正则，暂不提供该接口
      
-     - parameter format: URL格式（正则表达式）
+     - parameter format:                URL格式（正则表达式）
+     - parameter navigationController:  导航栏
      */
-    func setURLModifyFormat(format: String, navigationController: UINavigationController?) {
+    func setURLModifyFormat(format: String, navigationController: UINavigationController? = nil) {
         self.regularFormat = format
-        self.navigationController = navigationController
+        
+        if let navController = navigationController {
+            self.navigationController = navController
+        }
+    }
+    
+    func setRootViewController(module: String) {
+        guard let viewController = reflectViewController(module) else { return }
+        
+        navigationController = UINavigationController(rootViewController: viewController)
     }
     
     /**
-     注册新的统跳类型
+     注册新的视图控制器
      
-     - parameter label:      标识支付串
-     - parameter type:       要注册的类型
+     - parameter name:       视图控制器名称
+     - parameter type:       视图控制器类型
      - parameter parameters: 对应的参数名称列表
      
-     - returns: 是否注册成功
+     - returns: 注册结果
      */
-    func registerNewModule(label: String, type: AnyClass, parameters: [String]) -> Bool {
+    func registerNewModule(name: String, type: AnyClass, parameters: [String]) -> Bool {
         if type is UIViewController.Type {
-            mapClass[label] = type
-            mapParameters[label] = parameters
+            mapClass[name] = .normal(type: type)
+            mapParameters[name] = parameters
             
             return true
         }
@@ -186,11 +254,59 @@ class CRNativeRouter: NSObject {
         return false
     }
     
-    func showModuleViewController(url: String) -> Bool {
-        guard judgeUrlAvailable(url) else { return false }
+    /**
+     注册新的nib视图控制器
+     
+     - parameter name:       视图控制器名称
+     - parameter type:       视图控制器类型
+     - parameter nib:        nib名称
+     - parameter parameters: 对应的参数名称列表
+     
+     - returns: 注册结果
+     */
+    func registerNewModule(name: String, type: AnyClass, nib: String, parameters: [String]) -> Bool {
+        if type is UIViewController.Type {
+            mapClass[name] = .nib(type: type, name: nib)
+            mapParameters[name] = parameters
+            
+            return true
+        }
+        
+        return false
+    }
+    
+    /**
+     注册新的Storyboard视图控制器
+     
+     - parameter name:       视图控制器名称
+     - parameter type:       视图控制器类型
+     - parameter storyboard: storyboard名称
+     - parameter identifier: identifier标识
+     - parameter parameters: 对应的参数名称列表
+     
+     - returns: 注册结果
+     */
+    func registerNewModule(name: String, type: AnyClass, storyboard: String, identifier: String, parameters: [String]) -> Bool {
+        if type is UIViewController.Type {
+            mapClass[name] = CRNativeRouterViewControllerType.storyboard(type: type, name: storyboard, identifier: identifier)
+            mapParameters[name] = parameters
+            
+            return true
+        }
+        
+        return false
+    }
+    
+    /**
+     通过URL显示视图控制器
+     
+     - parameter url: 要显示的URL
+     */
+    func showModuleViewController(url: String) {
+        guard judgeUrlAvailable(url) else { return }
         
         let components = divideComponentsFromUrl(url)
-        guard let module = components[CRNativeRouterModuleKey] else { return false }
+        guard let module = components[CRNativeRouterModuleKey] else { return }
         let parameters = components[CRNativeRouterParametersKey] ?? ""
         
         if let viewController = reflectViewController(module) {
@@ -201,17 +317,11 @@ class CRNativeRouter: NSObject {
                     proto.getParametersFromRouter(vcParams)
                 }
                 
-                if let navController = navigationController {
-                    dispatch_async(dispatch_get_main_queue()) {
-                        navController.pushViewController(viewController, animated: true)
-                    }
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.navigationController.pushViewController(viewController, animated: true)
                 }
-            } else {
-                return false
             }
         }
-        
-        return true
     }
     
 }

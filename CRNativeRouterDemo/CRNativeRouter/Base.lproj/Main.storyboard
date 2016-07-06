@@ -8,7 +8,7 @@
         <!--1-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="CRNativeRouter" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ViewController" id="BYZ-38-t0r" customClass="ViewController" customModule="CRNativeRouter" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -41,7 +41,7 @@
                     </view>
                     <navigationItem key="navigationItem" title="1" id="EmO-ge-e16"/>
                     <connections>
-                        <segue destination="HXv-YV-ZNx" kind="push" id="Wgh-Nz-K8q"/>
+                        <segue destination="HXv-YV-ZNx" kind="show" id="80g-mB-Bdm"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -51,7 +51,7 @@
         <!--2-->
         <scene sceneID="Ps4-fx-3yR">
             <objects>
-                <viewController id="HXv-YV-ZNx" customClass="ViewController2" customModule="CRNativeRouter" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ViewController2" id="HXv-YV-ZNx" customClass="ViewController2" customModule="CRNativeRouter" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="T7I-fd-4on"/>
                         <viewControllerLayoutGuide type="bottom" id="Uq2-T6-Pjb"/>
