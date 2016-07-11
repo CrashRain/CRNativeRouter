@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         
-        CRNativeRouter.sharedInstance().setURLModifyFormat("^(Medical://)(\\w+\\.md)(\\?(([a-zA-Z]+\\w*=\\w+)(&[a-zA-Z]+\\w*=\\w+)*)|([a-zA-Z]+\\w*=\\w+))?$", navigationController: (window?.rootViewController as! UINavigationController))
+        CRNativeRouter.sharedInstance().setURLModifyFormat("^(Medical://)(\\w+\\.md)(\\?(([a-zA-Z]+\\w*=\\w+)(&[a-zA-Z]+\\w*=\\w+)*)|([a-zA-Z]+\\w*=\\w+))?$")
         
         CRNativeRouter.sharedInstance().registerNewModule("vc.md", type: ViewController.self, storyboard: "Main", identifier: "ViewController", parameters: [])
         CRNativeRouter.sharedInstance().registerNewModule("vc2.md", type: ViewController2.self, storyboard: "Main", identifier: "ViewController2", parameters: ["temp"])

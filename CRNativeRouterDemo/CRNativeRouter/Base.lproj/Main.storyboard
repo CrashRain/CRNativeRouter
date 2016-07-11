@@ -20,7 +20,7 @@
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="View Controller 1" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HYQ-2b-CY7">
                                 <rect key="frame" x="236" y="289" width="129" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="e6N-9r-z6b">
@@ -41,7 +41,7 @@
                     </view>
                     <navigationItem key="navigationItem" title="1" id="EmO-ge-e16"/>
                     <connections>
-                        <segue destination="HXv-YV-ZNx" kind="show" id="80g-mB-Bdm"/>
+                        <segue destination="HXv-YV-ZNx" kind="show" identifier="View1ShowView2Segue" id="80g-mB-Bdm"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -63,17 +63,31 @@
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="View Controller 2" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="un5-TB-8vE">
                                 <rect key="frame" x="234" y="289" width="132" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D1x-Pk-e9v">
+                                <rect key="frame" x="127" y="333" width="347" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="347" id="PTK-OX-fWx"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="D1x-Pk-e9v" firstAttribute="centerX" secondItem="LRJ-HQ-K23" secondAttribute="centerX" id="95o-ib-aBz"/>
+                            <constraint firstItem="D1x-Pk-e9v" firstAttribute="top" secondItem="un5-TB-8vE" secondAttribute="bottom" constant="23" id="9MM-ef-iCK"/>
                             <constraint firstItem="un5-TB-8vE" firstAttribute="centerY" secondItem="LRJ-HQ-K23" secondAttribute="centerY" id="FHR-hb-YnI"/>
                             <constraint firstItem="un5-TB-8vE" firstAttribute="centerX" secondItem="LRJ-HQ-K23" secondAttribute="centerX" id="dBh-A1-Zhs"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="2" id="oaA-Oq-2ea"/>
+                    <connections>
+                        <outlet property="tempLabel" destination="D1x-Pk-e9v" id="EF4-LN-zP4"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Wr6-da-8IJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

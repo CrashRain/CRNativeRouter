@@ -21,7 +21,7 @@ class ViewController: UIViewController, CRNativeRouterProtocol {
     }
 
     @IBAction func jump(sender: UIButton) {
-        CRNativeRouter.sharedInstance().showModuleViewController("Medical://vc2.md?temp=1")
+        CRNativeRouter.sharedInstance().navigationControllerShowViewController("Medical://vc2.md?temp=1", navigationController: navigationController)
     }
     
     func getParametersFromRouter(parameter: [String : AnyObject]) {

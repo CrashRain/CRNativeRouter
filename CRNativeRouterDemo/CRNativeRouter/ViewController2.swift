@@ -12,10 +12,14 @@ class ViewController2: UIViewController, CRNativeRouterProtocol {
     
     private var temp = 0
 
+    @IBOutlet weak var tempLabel: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        
+        tempLabel.text = "temp=\(temp)"
     }
 
     override func didReceiveMemoryWarning() {

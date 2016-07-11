@@ -36,13 +36,21 @@ class CRNativeRouter: NSObject {
         case storyboard(type: AnyClass, name: String, identifier: String)
     }
     
-    // 参数字典数据键值
-    private let CRNativeRouterTypeKey = "CRNativeRouterTypeKey"
-    private let CRNativeRouterModuleKey = "CRNativeRouterModuleKey"
-    private let CRNativeRouterParametersKey = "CRNativeRouterParametersKey"
+    // 视图显示方式
+    private enum CRNativeRouterViewPresentType {
+        case show
+        case showDetail
+        case presentModally
+        case presentAsPopover
+    }
+    
+    private enum CRNativeRouterKey: String {
+        case module = "CRNativeRouterModuleKey"
+        case parameters = "CRNativeRouterParametersKey"
+    }
     
     // 导航栏
-    private var navigationController: UINavigationController
+//    private var navigationController: UINavigationController
     
     // 映射关系
     private var mapClass: [String:CRNativeRouterViewControllerType] = [:]
@@ -76,8 +84,6 @@ class CRNativeRouter: NSObject {
      初始化函数
      */
     internal required override init() {
-        navigationController = UINavigationController()
-        
         super.init()
     }
     
@@ -99,8 +105,8 @@ class CRNativeRouter: NSObject {
      
      - returns: 分离后的字典数据
      */
-    private func divideComponentsFromUrl(url: String) -> [String:String] {
-        var compResult: [String:String] = [:]
+    private func divideComponentsFromUrl(url: String) -> [CRNativeRouterKey:String] {
+        var compResult: [CRNativeRouterKey:String] = [:]
         
         do {
             // 分离模块名称
@@ -111,7 +117,7 @@ class CRNativeRouter: NSObject {
                 let tempRange = components[0].range
                 let range = url.startIndex.advancedBy(tempRange.location + 3) ..< url.startIndex.advancedBy(tempRange.location + tempRange.length)
                 
-                compResult[CRNativeRouterModuleKey] = url.substringWithRange(range)
+                compResult[.module] = url.substringWithRange(range)
             }
             
             // 分离参数
@@ -122,7 +128,7 @@ class CRNativeRouter: NSObject {
                 let tempRange = components[0].range
                 let range = url.startIndex.advancedBy(tempRange.location + 1) ..< url.startIndex.advancedBy(tempRange.location + tempRange.length)
                 
-                compResult[CRNativeRouterParametersKey] = url.substringWithRange(range)
+                compResult[.parameters] = url.substringWithRange(range)
             }
         } catch {
             // exception catched
@@ -211,6 +217,29 @@ class CRNativeRouter: NSObject {
         return params
     }
     
+    /**
+     返回URL对应的视图控制器，并且完成对应的参数初始化
+     
+     - parameter url: URL
+     
+     - returns: 视图控制器
+     */
+    private func figureModuleViewControllerAndParameter(url: String) -> UIViewController? {
+        guard judgeUrlAvailable(url) else { return nil }
+        
+        let components = divideComponentsFromUrl(url)
+        guard let module = components[.module] else { return nil }
+        let parameters = components[.parameters] ?? ""
+        
+        if viewControllerParametersCheck(module, parameter: parameters), let viewController = reflectViewController(module) where viewController is CRNativeRouterProtocol {
+            (viewController as! CRNativeRouterProtocol).getParametersFromRouter(viewControllerParameterGenerate(parameters))
+            
+            return viewController
+        }
+        
+        return nil
+    }
+    
     // MARK: API
     
     /**
@@ -220,18 +249,8 @@ class CRNativeRouter: NSObject {
      - parameter format:                URL格式（正则表达式）
      - parameter navigationController:  导航栏
      */
-    func setURLModifyFormat(format: String, navigationController: UINavigationController? = nil) {
+    func setURLModifyFormat(format: String) {
         self.regularFormat = format
-        
-        if let navController = navigationController {
-            self.navigationController = navController
-        }
-    }
-    
-    func setRootViewController(module: String) {
-        guard let viewController = reflectViewController(module) else { return }
-        
-        navigationController = UINavigationController(rootViewController: viewController)
     }
     
     /**
@@ -288,7 +307,7 @@ class CRNativeRouter: NSObject {
      */
     func registerNewModule(name: String, type: AnyClass, storyboard: String, identifier: String, parameters: [String]) -> Bool {
         if type is UIViewController.Type {
-            mapClass[name] = CRNativeRouterViewControllerType.storyboard(type: type, name: storyboard, identifier: identifier)
+            mapClass[name] = .storyboard(type: type, name: storyboard, identifier: identifier)
             mapParameters[name] = parameters
             
             return true
@@ -298,30 +317,76 @@ class CRNativeRouter: NSObject {
     }
     
     /**
-     通过URL显示视图控制器
+     Navigation controller push a new view controller
      
-     - parameter url: 要显示的URL
+     - parameter url:                  URL
+     - parameter navigationController: navigation controller
      */
-    func showModuleViewController(url: String) {
-        guard judgeUrlAvailable(url) else { return }
-        
-        let components = divideComponentsFromUrl(url)
-        guard let module = components[CRNativeRouterModuleKey] else { return }
-        let parameters = components[CRNativeRouterParametersKey] ?? ""
-        
-        if let viewController = reflectViewController(module) {
-            if viewControllerParametersCheck(module, parameter: components[CRNativeRouterParametersKey]!) {
-                if viewController is CRNativeRouterProtocol {
-                    let vcParams = viewControllerParameterGenerate(parameters)
-                    let proto = viewController as! CRNativeRouterProtocol
-                    proto.getParametersFromRouter(vcParams)
-                }
-                
-                dispatch_async(dispatch_get_main_queue()) {
-                    self.navigationController.pushViewController(viewController, animated: true)
-                }
-            }
+    @available(iOS, introduced=8.0, message="Up to iOS 8.0 deprecated, use show view controller instead")
+    func navigationControllerPushViewController(url: String, navigationController: UINavigationController?) {
+        if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url) {
+            navigation.pushViewController(viewController, animated: true)
         }
     }
     
+    /**
+     Navigation controller show a new view controller
+     
+     - parameter url:                  URL
+     - parameter navigationController: navigation controller
+     */
+    @available(iOS 8.0, *)
+    func navigationControllerShowViewController(url: String, navigationController: UINavigationController?) {
+        if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url) {
+            navigation.showViewController(viewController, sender: self)
+        }
+    }
+    
+    /**
+     Navigation controller show detail a new view controller
+     
+     - parameter url:                  URL
+     - parameter navigationController: navigation controller
+     */
+    @available(iOS 8.0, *)
+    func navigationControllerShowDetailViewController(url: String, navigationController: UINavigationController?) {
+        if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url) {
+            navigation.showDetailViewController(viewController, sender: self)
+        }
+    }
+    
+    /**
+     Show a view controller modally
+     
+     - parameter url:            URL
+     - parameter viewController: view controller
+     */
+    @available(iOS 8.0, *)
+    func showModallyViewController(url: String, viewController: UIViewController) {
+        if let vc = figureModuleViewControllerAndParameter(url) {
+            viewController.modalPresentationStyle = .OverCurrentContext
+            viewController.modalTransitionStyle = .CoverVertical
+            viewController.navigationController?.modalTransitionStyle = .CoverVertical
+            
+            viewController.presentViewController(vc, animated: true, completion: nil)
+        }
+    }
+    
+    /**
+     Pop over a new view controller
+     
+     - parameter url:            URL
+     - parameter viewController: view controller
+     - parameter sourceRect:     source area rect
+     */
+    func popoverViewController(url: String, viewController: UIViewController, sourceRect: CGRect) {
+        if let vc = figureModuleViewControllerAndParameter(url), let popoverController = viewController.popoverPresentationController {
+            viewController.navigationController?.modalPresentationStyle = .Popover
+            
+            popoverController.sourceView = viewController.view
+            popoverController.sourceRect = sourceRect
+            
+            viewController.presentViewController(vc, animated: true, completion: nil)
+        }
+    }
 }
