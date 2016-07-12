@@ -199,6 +199,8 @@ class CRNativeRouter: NSObject {
      - returns: 参数字典数据
      */
     private func viewControllerParameterGenerate(parameter: String) -> [String:AnyObject] {
+        guard  parameter != "" else { return [:] }
+
         let components = parameter.componentsSeparatedByString("&")
         var params: [String:AnyObject] = [:]
         
@@ -224,15 +226,25 @@ class CRNativeRouter: NSObject {
      
      - returns: 视图控制器
      */
-    private func figureModuleViewControllerAndParameter(url: String) -> UIViewController? {
+    private func figureModuleViewControllerAndParameter(url: String, parameters: [String:AnyObject]? = nil) -> UIViewController? {
         guard judgeUrlAvailable(url) else { return nil }
         
         let components = divideComponentsFromUrl(url)
         guard let module = components[.module] else { return nil }
-        let parameters = components[.parameters] ?? ""
         
-        if viewControllerParametersCheck(module, parameter: parameters), let viewController = reflectViewController(module) where viewController is CRNativeRouterProtocol {
-            (viewController as! CRNativeRouterProtocol).getParametersFromRouter(viewControllerParameterGenerate(parameters))
+        var parameterStr = components[.parameters] ?? ""
+        
+        if let param = parameters {
+            for key in param.keys where ((param[key] as? String) != nil || (param[key] as? Int) != nil || (param[key] as? Double) != nil) {
+                parameterStr += "&\(key)=\(param[key]!)"
+            }
+            if parameterStr.hasPrefix("&") {
+                parameterStr = parameterStr.substringFromIndex(parameterStr.startIndex.advancedBy(1))
+            }
+        }
+        
+        if viewControllerParametersCheck(module, parameter: parameterStr), let viewController = reflectViewController(module) where viewController is CRNativeRouterProtocol {
+            (viewController as! CRNativeRouterProtocol).getParametersFromRouter(viewControllerParameterGenerate(parameterStr))
             
             return viewController
         }
@@ -322,9 +334,16 @@ class CRNativeRouter: NSObject {
      - parameter url:                  URL
      - parameter navigationController: navigation controller
      */
-    @available(iOS, introduced=8.0, message="Up to iOS 8.0 deprecated, use show view controller instead")
+    @available(iOS, deprecated=8.0, message="Up to iOS 8.0 deprecated, use show view controller instead")
     func navigationControllerPushViewController(url: String, navigationController: UINavigationController?) {
         if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url) {
+            navigation.pushViewController(viewController, animated: true)
+        }
+    }
+    
+    @available(iOS, deprecated=8.0, message="Up to iOS 8.0 deprecated, use show view controller instead")
+    func navigationControllerPushViewController(url: String, parameters: [String:AnyObject], navigationController: UINavigationController?) {
+        if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
             navigation.pushViewController(viewController, animated: true)
         }
     }
@@ -342,6 +361,13 @@ class CRNativeRouter: NSObject {
         }
     }
     
+    @available(iOS 8.0, *)
+    func navigationControllerShowViewController(url: String, parameters: [String:AnyObject], navigationController: UINavigationController?) {
+        if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
+            navigation.showViewController(viewController, sender: self)
+        }
+    }
+    
     /**
      Navigation controller show detail a new view controller
      
@@ -351,6 +377,13 @@ class CRNativeRouter: NSObject {
     @available(iOS 8.0, *)
     func navigationControllerShowDetailViewController(url: String, navigationController: UINavigationController?) {
         if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url) {
+            navigation.showDetailViewController(viewController, sender: self)
+        }
+    }
+    
+    @available(iOS 8.0, *)
+    func navigationControllerShowDetailViewController(url: String, parameters: [String:AnyObject], navigationController: UINavigationController?) {
+        if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
             navigation.showDetailViewController(viewController, sender: self)
         }
     }
@@ -372,6 +405,17 @@ class CRNativeRouter: NSObject {
         }
     }
     
+    @available(iOS 8.0, *)
+    func showModallyViewController(url: String, viewController: UIViewController, parameters: [String:AnyObject]) {
+        if let vc = figureModuleViewControllerAndParameter(url, parameters: parameters) {
+            viewController.modalPresentationStyle = .OverCurrentContext
+            viewController.modalTransitionStyle = .CoverVertical
+            viewController.navigationController?.modalTransitionStyle = .CoverVertical
+            
+            viewController.presentViewController(vc, animated: true, completion: nil)
+        }
+    }
+    
     /**
      Pop over a new view controller
      
@@ -379,8 +423,21 @@ class CRNativeRouter: NSObject {
      - parameter viewController: view controller
      - parameter sourceRect:     source area rect
      */
+    @available(iOS 8.0, *)
     func popoverViewController(url: String, viewController: UIViewController, sourceRect: CGRect) {
         if let vc = figureModuleViewControllerAndParameter(url), let popoverController = viewController.popoverPresentationController {
+            viewController.navigationController?.modalPresentationStyle = .Popover
+            
+            popoverController.sourceView = viewController.view
+            popoverController.sourceRect = sourceRect
+            
+            viewController.presentViewController(vc, animated: true, completion: nil)
+        }
+    }
+    
+    @available(iOS 8.0, *)
+    func popoverViewController(url: String, viewController: UIViewController, parameters: [String:AnyObject], sourceRect: CGRect) {
+        if let vc = figureModuleViewControllerAndParameter(url, parameters: parameters), let popoverController = viewController.popoverPresentationController {
             viewController.navigationController?.modalPresentationStyle = .Popover
             
             popoverController.sourceView = viewController.view

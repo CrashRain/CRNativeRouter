@@ -75,18 +75,30 @@
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qzO-hH-fnM">
+                                <rect key="frame" x="127" y="362" width="347" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="347" id="UX5-mU-UZF"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="D1x-Pk-e9v" firstAttribute="centerX" secondItem="LRJ-HQ-K23" secondAttribute="centerX" id="95o-ib-aBz"/>
                             <constraint firstItem="D1x-Pk-e9v" firstAttribute="top" secondItem="un5-TB-8vE" secondAttribute="bottom" constant="23" id="9MM-ef-iCK"/>
                             <constraint firstItem="un5-TB-8vE" firstAttribute="centerY" secondItem="LRJ-HQ-K23" secondAttribute="centerY" id="FHR-hb-YnI"/>
+                            <constraint firstItem="qzO-hH-fnM" firstAttribute="centerX" secondItem="LRJ-HQ-K23" secondAttribute="centerX" id="OEI-l5-Abu"/>
+                            <constraint firstItem="qzO-hH-fnM" firstAttribute="top" secondItem="D1x-Pk-e9v" secondAttribute="bottom" constant="8" id="PPh-gN-REG"/>
                             <constraint firstItem="un5-TB-8vE" firstAttribute="centerX" secondItem="LRJ-HQ-K23" secondAttribute="centerX" id="dBh-A1-Zhs"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="2" id="oaA-Oq-2ea"/>
                     <connections>
                         <outlet property="tempLabel" destination="D1x-Pk-e9v" id="EF4-LN-zP4"/>
+                        <outlet property="testLabel" destination="qzO-hH-fnM" id="EPf-hz-7Xo"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Wr6-da-8IJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
