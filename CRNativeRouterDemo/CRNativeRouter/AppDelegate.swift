@@ -20,7 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         CRNativeRouter.sharedInstance().setURLModifyFormat("^(Medical://)(\\w+\\.md)(\\?(([a-zA-Z]+\\w*=\\w+)(&[a-zA-Z]+\\w*=\\w+)*)|([a-zA-Z]+\\w*=\\w+))?$")
         
         CRNativeRouter.sharedInstance().registerNewModule("vc.md", type: ViewController.self, storyboard: "Main", identifier: "ViewController", parameters: [])
-        CRNativeRouter.sharedInstance().registerNewModule("vc2.md", type: ViewController2.self, storyboard: "Main", identifier: "ViewController2", parameters: ["temp", "test"])
+        CRNativeRouter.sharedInstance().registerNewModule("vc2.md", type: ViewController2.self, storyboard: "Main", identifier: "ViewController2", parameters: ["temp", "test", "url"])
         
         return true
     }

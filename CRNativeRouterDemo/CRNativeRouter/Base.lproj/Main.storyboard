@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="fFr-Ik-R68">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="fFr-Ik-R68">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
@@ -84,14 +84,25 @@
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="urr-zP-8kd">
+                                <rect key="frame" x="127" y="391" width="347" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="347" id="rtz-zc-TNm"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="D1x-Pk-e9v" firstAttribute="centerX" secondItem="LRJ-HQ-K23" secondAttribute="centerX" id="95o-ib-aBz"/>
                             <constraint firstItem="D1x-Pk-e9v" firstAttribute="top" secondItem="un5-TB-8vE" secondAttribute="bottom" constant="23" id="9MM-ef-iCK"/>
                             <constraint firstItem="un5-TB-8vE" firstAttribute="centerY" secondItem="LRJ-HQ-K23" secondAttribute="centerY" id="FHR-hb-YnI"/>
+                            <constraint firstItem="urr-zP-8kd" firstAttribute="centerX" secondItem="LRJ-HQ-K23" secondAttribute="centerX" id="K6P-dk-OgN"/>
                             <constraint firstItem="qzO-hH-fnM" firstAttribute="centerX" secondItem="LRJ-HQ-K23" secondAttribute="centerX" id="OEI-l5-Abu"/>
                             <constraint firstItem="qzO-hH-fnM" firstAttribute="top" secondItem="D1x-Pk-e9v" secondAttribute="bottom" constant="8" id="PPh-gN-REG"/>
+                            <constraint firstItem="urr-zP-8kd" firstAttribute="top" secondItem="qzO-hH-fnM" secondAttribute="bottom" constant="8" id="X0I-We-JLR"/>
                             <constraint firstItem="un5-TB-8vE" firstAttribute="centerX" secondItem="LRJ-HQ-K23" secondAttribute="centerX" id="dBh-A1-Zhs"/>
                         </constraints>
                     </view>
@@ -99,6 +110,7 @@
                     <connections>
                         <outlet property="tempLabel" destination="D1x-Pk-e9v" id="EF4-LN-zP4"/>
                         <outlet property="testLabel" destination="qzO-hH-fnM" id="EPf-hz-7Xo"/>
+                        <outlet property="urlLabel" destination="urr-zP-8kd" id="peu-u2-pMn"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Wr6-da-8IJ" userLabel="First Responder" sceneMemberID="firstResponder"/>

@@ -12,9 +12,11 @@ class ViewController2: UIViewController, CRNativeRouterProtocol {
     
     private var temp = 0
     private var test = 0
+    private var url = ""
 
     @IBOutlet weak var tempLabel: UILabel!
     @IBOutlet weak var testLabel: UILabel!
+    @IBOutlet weak var urlLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,6 +25,7 @@ class ViewController2: UIViewController, CRNativeRouterProtocol {
         
         tempLabel.text = "temp=\(temp)"
         testLabel.text = "test=\(test)"
+        urlLabel.text = "URL: \(url)"
     }
 
     override func didReceiveMemoryWarning() {
@@ -34,6 +37,7 @@ class ViewController2: UIViewController, CRNativeRouterProtocol {
     func getParametersFromRouter(parameter: [String : AnyObject]) {
         temp = parameter["temp"] as! Int
         test = parameter["test"] as! Int
+        url = parameter["url"] as! String
     }
 
 }

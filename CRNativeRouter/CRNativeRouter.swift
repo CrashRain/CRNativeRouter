@@ -13,11 +13,12 @@ infix operator =~ {
     precedence 130
 }
 
-func =~ (lhs: String, rhs: String) -> Bool {
+func ~= (lhs: String, rhs: String) -> Bool {
     var match = false
     
-    if let _ = try? NSRegularExpression(pattern: rhs, options: .CaseInsensitive).firstMatchInString(lhs, options: NSMatchingOptions(rawValue: 0), range: NSRange(location: 0, length: lhs.characters.count)) {
-        match = true
+    if let result = try? NSRegularExpression(pattern: rhs, options: .CaseInsensitive).firstMatchInString(lhs, options: NSMatchingOptions(rawValue: 0), range: NSRange(location: 0, length: lhs.characters.count)) {
+        
+        match = (result != nil)
     }
     
     return match
@@ -95,7 +96,7 @@ class CRNativeRouter: NSObject {
      - returns: 比较结果
      */
     private func judgeUrlAvailable(url: String) -> Bool {
-        return url =~ regularFormat
+        return url ~= regularFormat
     }
     
     /**
@@ -170,7 +171,7 @@ class CRNativeRouter: NSObject {
      
      - returns: 校验结果
      */
-    private func viewControllerParametersCheck(module: String, parameter: String) -> Bool {
+    private func viewControllerParametersCheck(module: String, parameter: String, paramDict: [String:AnyObject]? = nil) -> Bool {
         guard let requiredList = mapParameters[module] else { return false }
         
         let components = parameter.componentsSeparatedByString("&")
@@ -180,15 +181,17 @@ class CRNativeRouter: NSObject {
             params.append(item.componentsSeparatedByString("=")[0])
         }
         
-        var result = true
+        if let additionalParams = paramDict {
+            params.appendContentsOf(additionalParams.keys)
+        }
+        
         for item in requiredList {
             if !params.contains(item) {
-                result = false
-                break
+                return false
             }
         }
         
-        return result
+        return true
     }
     
     /**
@@ -198,7 +201,7 @@ class CRNativeRouter: NSObject {
      
      - returns: 参数字典数据
      */
-    private func viewControllerParameterGenerate(parameter: String) -> [String:AnyObject] {
+    private func viewControllerParameterGenerate(parameter: String, paramDict: [String:AnyObject]? = nil) -> [String:AnyObject] {
         guard  parameter != "" else { return [:] }
 
         let components = parameter.componentsSeparatedByString("&")
@@ -213,6 +216,12 @@ class CRNativeRouter: NSObject {
                 params[refs[0]] = doubleValue
             } else {
                 params[refs[0]] = refs[1]
+            }
+        }
+        
+        if let additionalParam = paramDict {
+            additionalParam.keys.forEach { key in
+                params[key] = additionalParam[key]
             }
         }
         
@@ -231,20 +240,10 @@ class CRNativeRouter: NSObject {
         
         let components = divideComponentsFromUrl(url)
         guard let module = components[.module] else { return nil }
+        let parameterStr = components[.parameters] ?? ""
         
-        var parameterStr = components[.parameters] ?? ""
-        
-        if let param = parameters {
-            for key in param.keys where ((param[key] as? String) != nil || (param[key] as? Int) != nil || (param[key] as? Double) != nil) {
-                parameterStr += "&\(key)=\(param[key]!)"
-            }
-            if parameterStr.hasPrefix("&") {
-                parameterStr = parameterStr.substringFromIndex(parameterStr.startIndex.advancedBy(1))
-            }
-        }
-        
-        if viewControllerParametersCheck(module, parameter: parameterStr), let viewController = reflectViewController(module) where viewController is CRNativeRouterProtocol {
-            (viewController as! CRNativeRouterProtocol).getParametersFromRouter(viewControllerParameterGenerate(parameterStr))
+        if viewControllerParametersCheck(module, parameter: parameterStr, paramDict: parameters), let viewController = reflectViewController(module) where viewController is CRNativeRouterProtocol {
+            (viewController as! CRNativeRouterProtocol).getParametersFromRouter(viewControllerParameterGenerate(parameterStr, paramDict: parameters))
             
             return viewController
         }
