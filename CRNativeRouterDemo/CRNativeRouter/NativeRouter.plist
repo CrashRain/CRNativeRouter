@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Modules</key>
+	<array>
+		<dict>
+			<key>parameters</key>
+			<array>
+				<string>url</string>
+				<string>test</string>
+				<string>temp</string>
+			</array>
+			<key>identifier</key>
+			<string>ViewController3</string>
+			<key>storyboard</key>
+			<string>Main</string>
+			<key>type</key>
+			<string>ViewController3</string>
+			<key>name</key>
+			<string>vc3.md</string>
+		</dict>
+	</array>
+</dict>
+</plist>

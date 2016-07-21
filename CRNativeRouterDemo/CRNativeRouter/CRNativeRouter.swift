@@ -328,6 +328,51 @@ class CRNativeRouter: NSObject {
     }
     
     /**
+     从plist文件注册视图控制器
+     
+     - parameter filename: plist文件名称
+     */
+    func registerModulesFromConfiguration(filename: String) {
+        guard let plistPath = NSBundle.mainBundle().pathForResource(filename, ofType: "plist") else { return }
+        guard let modulesDict = NSDictionary(contentsOfFile: plistPath) else { return }
+        guard let modules = modulesDict["Modules"] as? [[String:AnyObject]] else { return }
+        
+        modules.forEach { module in
+            guard let name = module["name"] as? String else { return }
+            guard let type = module["type"] as? String else { return }
+            
+            guard let namespace = NSBundle.mainBundle().infoDictionary!["CFBundleExecutable"] as? String else { return }
+            guard let className = NSClassFromString(namespace + "." + type) else { return }
+            
+            guard let parameters = module["parameters"] as? [String] else { return }
+            
+            if let storyboard = module["storyboard"] as? String { // storyboard
+                guard let identifier = module["identifier"] as? String else { return }
+                
+                registerNewModule(name, type: className, storyboard: storyboard, identifier: identifier, parameters: parameters)
+            } else if let nib = module["nib"] as? String {
+                registerNewModule(name, type: className, nib: nib, parameters: parameters)
+            } else {
+                registerNewModule(name, type: className, parameters: parameters)
+            }
+        }
+    }
+    
+    /**
+     从plist总文件中获取各个分plist文件，并注册视图控制器
+     
+     - parameter filename: plist文件名称
+     */
+    func registerModulesFromDeveloperGroupConfiguration(filename: String) {
+        guard let plistPath = NSBundle.mainBundle().pathForResource(filename, ofType: "plist") else { return }
+        guard let groupArray = NSArray(contentsOfFile: plistPath) as? [String] else { return }
+        
+        groupArray.forEach { file in
+            registerModulesFromConfiguration(file)
+        }
+    }
+    
+    /**
      Navigation controller push a new view controller
      
      - parameter url:                  URL
