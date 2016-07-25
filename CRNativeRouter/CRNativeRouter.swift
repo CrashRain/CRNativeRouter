@@ -156,8 +156,7 @@ class CRNativeRouter: NSObject {
         case .nib(let vcType, let nib):
             viewController = (vcType as! UIViewController.Type).init(nibName: nib, bundle: nil)
         case .storyboard(_, let name, let identifier):
-            let storyboard = UIStoryboard(name: name, bundle: nil)
-            viewController = storyboard.instantiateViewControllerWithIdentifier(identifier)
+            viewController = UIStoryboard(name: name, bundle: nil).instantiateViewControllerWithIdentifier(identifier)
         }
         
         return viewController
@@ -273,10 +272,10 @@ class CRNativeRouter: NSObject {
      
      - returns: 注册结果
      */
-    func registerNewModule(name: String, type: AnyClass, parameters: [String]) -> Bool {
+    func registerNewModule(name: String, type: AnyClass, parameters: [String]?) -> Bool {
         if type is UIViewController.Type {
             mapClass[name] = .normal(type: type)
-            mapParameters[name] = parameters
+            mapParameters[name] = parameters ?? []
             
             return true
         }
@@ -294,10 +293,10 @@ class CRNativeRouter: NSObject {
      
      - returns: 注册结果
      */
-    func registerNewModule(name: String, type: AnyClass, nib: String, parameters: [String]) -> Bool {
+    func registerNewModule(name: String, type: AnyClass, nib: String, parameters: [String]?) -> Bool {
         if type is UIViewController.Type {
             mapClass[name] = .nib(type: type, name: nib)
-            mapParameters[name] = parameters
+            mapParameters[name] = parameters ?? []
             
             return true
         }
@@ -316,10 +315,10 @@ class CRNativeRouter: NSObject {
      
      - returns: 注册结果
      */
-    func registerNewModule(name: String, type: AnyClass, storyboard: String, identifier: String, parameters: [String]) -> Bool {
+    func registerNewModule(name: String, type: AnyClass, storyboard: String, identifier: String, parameters: [String]?) -> Bool {
         if type is UIViewController.Type {
             mapClass[name] = .storyboard(type: type, name: storyboard, identifier: identifier)
-            mapParameters[name] = parameters
+            mapParameters[name] = parameters ?? []
             
             return true
         }
@@ -344,7 +343,7 @@ class CRNativeRouter: NSObject {
             guard let namespace = NSBundle.mainBundle().infoDictionary!["CFBundleExecutable"] as? String else { return }
             guard let className = NSClassFromString(namespace + "." + type) else { return }
             
-            guard let parameters = module["parameters"] as? [String] else { return }
+            let parameters = module["parameters"] as? [String]
             
             if let storyboard = module["storyboard"] as? String { // storyboard
                 guard let identifier = module["identifier"] as? String else { return }
