@@ -24,6 +24,7 @@ func ~= (lhs: String, rhs: String) -> Bool {
     return match
 }
 
+@objc
 protocol CRNativeRouterProtocol {
     func getParametersFromRouter(parameter: [String:AnyObject])
 }
@@ -241,8 +242,14 @@ class CRNativeRouter: NSObject {
         guard let module = components[.module] else { return nil }
         let parameterStr = components[.parameters] ?? ""
         
-        if viewControllerParametersCheck(module, parameter: parameterStr, paramDict: parameters), let viewController = reflectViewController(module) where viewController is CRNativeRouterProtocol {
-            (viewController as! CRNativeRouterProtocol).getParametersFromRouter(viewControllerParameterGenerate(parameterStr, paramDict: parameters))
+        if viewControllerParametersCheck(module, parameter: parameterStr, paramDict: parameters), let viewController = reflectViewController(module) {
+            if mapParameters[module]!.count != 0 && !(viewController is CRNativeRouterProtocol) {
+                return nil
+            }
+            
+            if viewController is CRNativeRouterProtocol {
+                (viewController as! CRNativeRouterProtocol).getParametersFromRouter(viewControllerParameterGenerate(parameterStr, paramDict: parameters))
+            }
             
             return viewController
         }
@@ -341,7 +348,7 @@ class CRNativeRouter: NSObject {
             guard let type = module["type"] as? String else { return }
             
             guard let namespace = NSBundle.mainBundle().infoDictionary!["CFBundleExecutable"] as? String else { return }
-            guard let className = NSClassFromString(namespace + "." + type) else { return }
+            guard let className = NSClassFromString(namespace + "." + type) ?? NSClassFromString(type) else { return }
             
             let parameters = module["parameters"] as? [String]
             
