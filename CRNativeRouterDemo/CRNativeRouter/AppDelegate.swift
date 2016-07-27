@@ -2,8 +2,8 @@
 //  AppDelegate.swift
 //  CRNativeRouter
 //
-//  Created by 易行 on 16/7/1.
-//  Copyright © 2016年 易行. All rights reserved.
+//  Created by CrashRain on 16/7/1.
+//  Copyright © 2016年 CrashRain. All rights reserved.
 //
 
 import UIKit
