@@ -7,6 +7,21 @@
 		<dict>
 			<key>parameters</key>
 			<array>
+				<string>value</string>
+				<string>test</string>
+			</array>
+			<key>identifier</key>
+			<string>ViewController4</string>
+			<key>storyboard</key>
+			<string>Main</string>
+			<key>type</key>
+			<string>ViewController4</string>
+			<key>name</key>
+			<string>vc4.md</string>
+		</dict>
+		<dict>
+			<key>parameters</key>
+			<array>
 				<string>url</string>
 				<string>test</string>
 				<string>temp</string>

@@ -10,6 +10,7 @@
 		9D53F4671D4093FC004FE794 /* NativeRouter.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9D53F4661D4093FC004FE794 /* NativeRouter.plist */; };
 		9D53F4691D4099FF004FE794 /* ViewController3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D53F4681D4099FF004FE794 /* ViewController3.swift */; };
 		9D53F46B1D40A090004FE794 /* NativeRouterGroup.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9D53F46A1D40A090004FE794 /* NativeRouterGroup.plist */; };
+		9D8B5DA21D4C72D10059E6C2 /* ViewController4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D8B5DA11D4C72D10059E6C2 /* ViewController4.swift */; };
 		9D9E14641D2B7F30006459EA /* ViewController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D9E14631D2B7F30006459EA /* ViewController2.swift */; };
 		9DA76A021D26421B00D21910 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA76A011D26421B00D21910 /* AppDelegate.swift */; };
 		9DA76A041D26421B00D21910 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA76A031D26421B00D21910 /* ViewController.swift */; };
@@ -34,6 +35,7 @@
 		9D53F4661D4093FC004FE794 /* NativeRouter.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = NativeRouter.plist; sourceTree = "<group>"; };
 		9D53F4681D4099FF004FE794 /* ViewController3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController3.swift; sourceTree = "<group>"; };
 		9D53F46A1D40A090004FE794 /* NativeRouterGroup.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = NativeRouterGroup.plist; sourceTree = "<group>"; };
+		9D8B5DA11D4C72D10059E6C2 /* ViewController4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController4.swift; sourceTree = "<group>"; };
 		9D9E14631D2B7F30006459EA /* ViewController2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController2.swift; sourceTree = "<group>"; };
 		9DA769FE1D26421A00D21910 /* CRNativeRouter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CRNativeRouter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DA76A011D26421B00D21910 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -92,6 +94,7 @@
 				9DA76A031D26421B00D21910 /* ViewController.swift */,
 				9D9E14631D2B7F30006459EA /* ViewController2.swift */,
 				9D53F4681D4099FF004FE794 /* ViewController3.swift */,
+				9D8B5DA11D4C72D10059E6C2 /* ViewController4.swift */,
 				9DA76A051D26421B00D21910 /* Main.storyboard */,
 				9DA76A081D26421B00D21910 /* Assets.xcassets */,
 				9DA76A0A1D26421B00D21910 /* LaunchScreen.storyboard */,
@@ -215,6 +218,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9D53F4691D4099FF004FE794 /* ViewController3.swift in Sources */,
+				9D8B5DA21D4C72D10059E6C2 /* ViewController4.swift in Sources */,
 				9DA76A041D26421B00D21910 /* ViewController.swift in Sources */,
 				9D9E14641D2B7F30006459EA /* ViewController2.swift in Sources */,
 				9DA76A221D26430000D21910 /* CRNativeRouter.swift in Sources */,

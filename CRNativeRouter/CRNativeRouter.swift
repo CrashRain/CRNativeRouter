@@ -257,6 +257,35 @@ class CRNativeRouter: NSObject {
         return nil
     }
     
+    /**
+     获取当前显示的视图控制器
+     
+     - returns: 当前显示的视图控制器
+     */
+    private func currentViewController() -> UIViewController? {
+        guard let rootViewController = UIApplication.sharedApplication().keyWindow?.rootViewController else { return nil }
+        
+        return recursionTopViewController(rootViewController)
+    }
+    
+    /**
+     递归查找显示的视图控制器
+     
+     - parameter rootViewController: 开始查找的视图控制器结点
+     
+     - returns: 视图控制器
+     */
+    private func recursionTopViewController(rootViewController: UIViewController) -> UIViewController {
+        if rootViewController is UINavigationController {
+            let navigationController = rootViewController as! UINavigationController
+            return recursionTopViewController(navigationController.topViewController!)
+        }
+        
+        guard let presentedViewController = rootViewController.presentedViewController else { return rootViewController }
+        
+        return recursionTopViewController(presentedViewController)
+    }
+    
     // MARK: API
     
     /**
@@ -384,17 +413,37 @@ class CRNativeRouter: NSObject {
      - parameter url:                  URL
      - parameter navigationController: navigation controller
      */
-    @available(iOS, deprecated=8.0, message="Up to iOS 8.0 deprecated, use show view controller instead")
+    @available(iOS, deprecated, message="Deprecated, use pushViewController instead, no need to pass in navigation controller")
     func navigationControllerPushViewController(url: String, navigationController: UINavigationController?) {
         if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url) {
             navigation.pushViewController(viewController, animated: true)
         }
     }
     
-    @available(iOS, deprecated=8.0, message="Up to iOS 8.0 deprecated, use show view controller instead")
+    /**
+     Navigation controller push a new view controller
+     
+     - parameter url:                  URL
+     - parameter parameters:           additional parameters
+     - parameter navigationController: navigation controller
+     */
+    @available(iOS, deprecated, message="Deprecated, use pushViewController instead, no need to pass in navigation controller")
     func navigationControllerPushViewController(url: String, parameters: [String:AnyObject], navigationController: UINavigationController?) {
         if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
             navigation.pushViewController(viewController, animated: true)
+        }
+    }
+    
+    /**
+     Navigation controller push a new view controller
+     
+     - parameter url:        URL
+     - parameter parameters: navigation controller
+     */
+    @available(iOS, deprecated=8.0, message="Up to iOS 8.0 deprecated, use show view controller instead")
+    func pushViewController(url: String, parameters: [String:AnyObject]? = nil) {
+        if let curViewController = currentViewController(), let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
+            curViewController.navigationController?.pushViewController(viewController, animated: true)
         }
     }
     
@@ -404,17 +453,37 @@ class CRNativeRouter: NSObject {
      - parameter url:                  URL
      - parameter navigationController: navigation controller
      */
-    @available(iOS 8.0, *)
+    @available(iOS, deprecated, message="Deprecated, use showViewController instead, no need to pass in navigation controller")
     func navigationControllerShowViewController(url: String, navigationController: UINavigationController?) {
         if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url) {
             navigation.showViewController(viewController, sender: self)
         }
     }
     
-    @available(iOS 8.0, *)
+    /**
+     Navigation controller show a new view controller
+     
+     - parameter url:                  URL
+     - parameter parameters:           additional parameters
+     - parameter navigationController: navigation controller
+     */
+    @available(iOS, deprecated, message="Deprecated, use showViewController instead, no need to pass in navigation controller")
     func navigationControllerShowViewController(url: String, parameters: [String:AnyObject], navigationController: UINavigationController?) {
         if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
             navigation.showViewController(viewController, sender: self)
+        }
+    }
+    
+    /**
+     Navigation controller show a new view controller
+     
+     - parameter url:        URL
+     - parameter parameters: additional parameters
+     */
+    @available(iOS 8.0, *)
+    func showViewController(url: String, parameters: [String:AnyObject]? = nil) {
+        if let curViewController = currentViewController(), let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
+            curViewController.navigationController?.showViewController(viewController, sender: self)
         }
     }
     
@@ -424,17 +493,37 @@ class CRNativeRouter: NSObject {
      - parameter url:                  URL
      - parameter navigationController: navigation controller
      */
-    @available(iOS 8.0, *)
+    @available(iOS, deprecated, message="Deprecated, use showDetailViewController instead, no need to pass in navigation controller")
     func navigationControllerShowDetailViewController(url: String, navigationController: UINavigationController?) {
         if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url) {
             navigation.showDetailViewController(viewController, sender: self)
         }
     }
     
-    @available(iOS 8.0, *)
+    /**
+     Navigation controller show detail a new view controller
+     
+     - parameter url:                  URL
+     - parameter parameters:           additional parameters
+     - parameter navigationController: navigation controller
+     */
+    @available(iOS, deprecated, message="Deprecated, use showDetailViewController instead, no need to pass in navigation controller")
     func navigationControllerShowDetailViewController(url: String, parameters: [String:AnyObject], navigationController: UINavigationController?) {
         if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
             navigation.showDetailViewController(viewController, sender: self)
+        }
+    }
+    
+    /**
+     Navigation controller show detail a new view controller
+     
+     - parameter url:        URL
+     - parameter parameters: additional parameters
+     */
+    @available(iOS 8.0, *)
+    func showDetailViewController(url: String, parameters: [String:AnyObject]? = nil) {
+        if let curViewController = currentViewController(), let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
+            curViewController.navigationController?.showDetailViewController(viewController, sender: self)
         }
     }
     
@@ -444,7 +533,7 @@ class CRNativeRouter: NSObject {
      - parameter url:            URL
      - parameter viewController: view controller
      */
-    @available(iOS 8.0, *)
+    @available(iOS, deprecated, message="Deprecated, use showModallyViewController instead, no need to pass in view controller")
     func showModallyViewController(url: String, viewController: UIViewController) {
         if let vc = figureModuleViewControllerAndParameter(url) {
             viewController.modalPresentationStyle = .OverCurrentContext
@@ -455,7 +544,14 @@ class CRNativeRouter: NSObject {
         }
     }
     
-    @available(iOS 8.0, *)
+    /**
+     Show a view controller modally
+     
+     - parameter url:                  URL
+     - parameter viewController:       view controller
+     - parameter parameters:           additional parameters
+     */
+    @available(iOS, deprecated, message="Deprecated, use showModallyViewController instead, no need to pass in view controller")
     func showModallyViewController(url: String, viewController: UIViewController, parameters: [String:AnyObject]) {
         if let vc = figureModuleViewControllerAndParameter(url, parameters: parameters) {
             viewController.modalPresentationStyle = .OverCurrentContext
@@ -467,13 +563,30 @@ class CRNativeRouter: NSObject {
     }
     
     /**
+     Show a view controller modally
+     
+     - parameter url:        URL
+     - parameter parameters: additional parameters
+     */
+    @available(iOS 8.0, *)
+    func showModallyViewController(url: String, parameters: [String:AnyObject]? = nil) {
+        if let curViewController = currentViewController(), let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
+            curViewController.modalPresentationStyle = .OverCurrentContext
+            curViewController.modalTransitionStyle = .CoverVertical
+            curViewController.navigationController?.modalTransitionStyle = .CoverVertical
+            
+            curViewController.presentViewController(viewController, animated: true, completion: nil)
+        }
+    }
+    
+    /**
      Pop over a new view controller
      
      - parameter url:            URL
      - parameter viewController: view controller
      - parameter sourceRect:     source area rect
      */
-    @available(iOS 8.0, *)
+    @available(iOS, deprecated, message="Deprecated, use popoverViewController instead, no need to pass in view controller")
     func popoverViewController(url: String, viewController: UIViewController, sourceRect: CGRect) {
         if let vc = figureModuleViewControllerAndParameter(url), let popoverController = viewController.popoverPresentationController {
             viewController.navigationController?.modalPresentationStyle = .Popover
@@ -485,7 +598,15 @@ class CRNativeRouter: NSObject {
         }
     }
     
-    @available(iOS 8.0, *)
+    /**
+     Pop over a new view controller
+     
+     - parameter url:                  URL
+     - parameter viewController:       view controller
+     - parameter parameters:           additional parameters
+     - parameter sourceRect:           source area rect
+     */
+    @available(iOS, deprecated, message="Deprecated, use popoverViewController instead, no need to pass in view controller")
     func popoverViewController(url: String, viewController: UIViewController, parameters: [String:AnyObject], sourceRect: CGRect) {
         if let vc = figureModuleViewControllerAndParameter(url, parameters: parameters), let popoverController = viewController.popoverPresentationController {
             viewController.navigationController?.modalPresentationStyle = .Popover
@@ -494,6 +615,27 @@ class CRNativeRouter: NSObject {
             popoverController.sourceRect = sourceRect
             
             viewController.presentViewController(vc, animated: true, completion: nil)
+        }
+    }
+    
+    /**
+     Pop over a new view controller
+     
+     - parameter url:        URL
+     - parameter sourceRect: source area rect
+     - parameter parameters: additional parameters
+     */
+    @available(iOS 8.0, *)
+    func popoverViewController(url: String, sourceRect: CGRect, parameters: [String:AnyObject]? = nil) {
+        if let curViewController = currentViewController(), let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
+            guard let popoverController = curViewController.popoverPresentationController else { return }
+            
+            curViewController.navigationController?.modalPresentationStyle = .Popover
+            
+            popoverController.sourceView = curViewController.view
+            popoverController.sourceRect = sourceRect
+            
+            curViewController.presentViewController(viewController, animated: true, completion: nil)
         }
     }
 }
