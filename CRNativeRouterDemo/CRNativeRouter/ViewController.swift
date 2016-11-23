@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController, CRNativeRouterProtocol {
+class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,19 +20,21 @@ class ViewController: UIViewController, CRNativeRouterProtocol {
         // Dispose of any resources that can be recreated.
     }
 
-    @IBAction func jump(sender: UIButton) {
+    @IBAction func jump(_ sender: UIButton) {
         CRNativeRouter.sharedInstance().pushViewController("Medical://vc2.md?temp=1", parameters: ["test": 1, "url": "http://xxxx.com?id=1&fdfd=2&fdg=3"])
     }
     
-    @IBAction func jumpToView3(sender: UIButton) {
+    @IBAction func jumpToView3(_ sender: UIButton) {
         CRNativeRouter.sharedInstance().showViewController("Medical://vc3.md?temp=3", parameters: ["test": 2, "url": "http://yyyy.com?id=1&haha=2&hello=3"])
     }
     
-    @IBAction func jumpToView4(sender: UIButton) {
+    @IBAction func jumpToView4(_ sender: UIButton) {
         CRNativeRouter.sharedInstance().showModallyViewController("Medical://vc4.md?test=1&value=3")
     }
-    
-    func getParametersFromRouter(parameter: [String : AnyObject]) {
+}
+
+extension ViewController: CRNativeRouterProtocol {
+    func getParametersFromRouter(_ parameter: [String : Any]) {
         
     }
 }

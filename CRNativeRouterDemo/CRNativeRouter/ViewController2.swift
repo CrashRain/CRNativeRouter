@@ -8,11 +8,11 @@
 
 import UIKit
 
-class ViewController2: UIViewController, CRNativeRouterProtocol {
+class ViewController2: UIViewController {
     
-    private var temp = 0
-    private var test = 0
-    private var url = ""
+    fileprivate var temp = 0
+    fileprivate var test = 0
+    fileprivate var url = ""
 
     @IBOutlet weak var tempLabel: UILabel!
     @IBOutlet weak var testLabel: UILabel!
@@ -32,12 +32,12 @@ class ViewController2: UIViewController, CRNativeRouterProtocol {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
+}
 
-    func getParametersFromRouter(parameter: [String : AnyObject]) {
+extension ViewController2: CRNativeRouterProtocol {
+    func getParametersFromRouter(_ parameter: [String : Any]) {
         temp = parameter["temp"] as! Int
         test = parameter["test"] as! Int
         url = parameter["url"] as! String
     }
-
 }

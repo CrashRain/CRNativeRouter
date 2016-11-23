@@ -10,9 +10,9 @@ import UIKit
 
 class ViewController3: UIViewController {
     
-    private var test = 0
-    private var temp = 0
-    private var url = ""
+    fileprivate var test = 0
+    fileprivate var temp = 0
+    fileprivate var url = ""
 
     @IBOutlet weak var testLabel: UILabel!
     @IBOutlet weak var tempLabel: UILabel!
@@ -35,7 +35,7 @@ class ViewController3: UIViewController {
 }
 
 extension ViewController3: CRNativeRouterProtocol {
-    func getParametersFromRouter(parameter: [String : AnyObject]) {
+    func getParametersFromRouter(_ parameter: [String : Any]) {
         test = parameter["test"] as! Int
         temp = parameter["temp"] as! Int
         url = parameter["url"] as! String
