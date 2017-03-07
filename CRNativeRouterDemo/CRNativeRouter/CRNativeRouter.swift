@@ -20,11 +20,11 @@ func ~= (lhs: String, rhs: String) -> Bool {
 }
 
 @objc
-protocol CRNativeRouterProtocol {
-    func getParametersFromRouter(_ parameter: [String:Any])
+public protocol CRNativeRouterProtocol {
+    func getParametersFromRouter(_ parameter: [String: Any])
 }
 
-class CRNativeRouter: NSObject {
+open class CRNativeRouter: NSObject {
     
     private static var __once: () = {
                 Static.instance = CRNativeRouter()
@@ -71,7 +71,7 @@ class CRNativeRouter: NSObject {
      
      - returns: 类实例
      */
-    class func sharedInstance() -> CRNativeRouter {
+    open class func sharedInstance() -> CRNativeRouter {
         if Static.instance == nil {
             _ = CRNativeRouter.__once
         }
@@ -82,7 +82,7 @@ class CRNativeRouter: NSObject {
     /**
      初始化函数
      */
-    internal required override init() {
+    public required override init() {
         super.init()
     }
     
@@ -292,7 +292,7 @@ class CRNativeRouter: NSObject {
      - parameter format:                URL格式（正则表达式）
      - parameter navigationController:  导航栏
      */
-    func setURLModifyFormat(_ format: String) {
+    open func setURLModifyFormat(_ format: String) {
         self.regularFormat = format
     }
     
@@ -305,7 +305,8 @@ class CRNativeRouter: NSObject {
      
      - returns: 注册结果
      */
-    func registerNewModule(_ name: String, type: AnyClass, parameters: [String]?) -> Bool {
+    @discardableResult
+    open func registerNewModule(_ name: String, type: AnyClass, parameters: [String]?) -> Bool {
         if type is UIViewController.Type {
             mapClass[name] = .normal(type: type)
             mapParameters[name] = parameters ?? []
@@ -326,7 +327,8 @@ class CRNativeRouter: NSObject {
      
      - returns: 注册结果
      */
-    func registerNewModule(_ name: String, type: AnyClass, nib: String, parameters: [String]?) -> Bool {
+    @discardableResult
+    open func registerNewModule(_ name: String, type: AnyClass, nib: String, parameters: [String]?) -> Bool {
         if type is UIViewController.Type {
             mapClass[name] = .nib(type: type, name: nib)
             mapParameters[name] = parameters ?? []
@@ -348,7 +350,8 @@ class CRNativeRouter: NSObject {
      
      - returns: 注册结果
      */
-    func registerNewModule(_ name: String, type: AnyClass, storyboard: String, identifier: String, parameters: [String]?) -> Bool {
+    @discardableResult
+    open func registerNewModule(_ name: String, type: AnyClass, storyboard: String, identifier: String, parameters: [String]?) -> Bool {
         if type is UIViewController.Type {
             mapClass[name] = .storyboard(type: type, name: storyboard, identifier: identifier)
             mapParameters[name] = parameters ?? []
@@ -364,7 +367,7 @@ class CRNativeRouter: NSObject {
      
      - parameter filename: plist文件名称
      */
-    func registerModulesFromConfiguration(_ filename: String) {
+    open func registerModulesFromConfiguration(_ filename: String) {
         guard let plistPath = Bundle.main.path(forResource: filename, ofType: "plist") else { return }
         guard let modulesDict = NSDictionary(contentsOfFile: plistPath) else { return }
         guard let modules = modulesDict["Modules"] as? [[String:Any]] else { return }
@@ -395,7 +398,7 @@ class CRNativeRouter: NSObject {
      
      - parameter filename: plist文件名称
      */
-    func registerModulesFromDeveloperGroupConfiguration(_ filename: String) {
+    open func registerModulesFromDeveloperGroupConfiguration(_ filename: String) {
         guard let plistPath = Bundle.main.path(forResource: filename, ofType: "plist") else { return }
         guard let groupArray = NSArray(contentsOfFile: plistPath) as? [String] else { return }
         
@@ -411,7 +414,7 @@ class CRNativeRouter: NSObject {
      - parameter navigationController: navigation controller
      */
     @available(iOS, deprecated, message: "Deprecated, use pushViewController instead, no need to pass in navigation controller")
-    func navigationControllerPushViewController(_ url: String, navigationController: UINavigationController?) {
+    open func navigationControllerPushViewController(_ url: String, navigationController: UINavigationController?) {
         if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url) {
             navigation.pushViewController(viewController, animated: true)
         }
@@ -425,7 +428,7 @@ class CRNativeRouter: NSObject {
      - parameter navigationController: navigation controller
      */
     @available(iOS, deprecated, message: "Deprecated, use pushViewController instead, no need to pass in navigation controller")
-    func navigationControllerPushViewController(_ url: String, parameters: [String:Any], navigationController: UINavigationController?) {
+    open func navigationControllerPushViewController(_ url: String, parameters: [String:Any], navigationController: UINavigationController?) {
         if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
             navigation.pushViewController(viewController, animated: true)
         }
@@ -438,7 +441,7 @@ class CRNativeRouter: NSObject {
      - parameter parameters: navigation controller
      */
     @available(iOS, deprecated: 8.0, message: "Up to iOS 8.0 deprecated, use show view controller instead")
-    func pushViewController(_ url: String, parameters: [String:Any]? = nil) {
+    open func pushViewController(_ url: String, parameters: [String:Any]? = nil) {
         if let curViewController = currentViewController(), let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
             curViewController.navigationController?.pushViewController(viewController, animated: true)
         }
@@ -451,7 +454,7 @@ class CRNativeRouter: NSObject {
      - parameter navigationController: navigation controller
      */
     @available(iOS, deprecated, message: "Deprecated, use showViewController instead, no need to pass in navigation controller")
-    func navigationControllerShowViewController(_ url: String, navigationController: UINavigationController?) {
+    open func navigationControllerShowViewController(_ url: String, navigationController: UINavigationController?) {
         if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url) {
             navigation.show(viewController, sender: self)
         }
@@ -465,7 +468,7 @@ class CRNativeRouter: NSObject {
      - parameter navigationController: navigation controller
      */
     @available(iOS, deprecated, message: "Deprecated, use showViewController instead, no need to pass in navigation controller")
-    func navigationControllerShowViewController(_ url: String, parameters: [String:Any], navigationController: UINavigationController?) {
+    open func navigationControllerShowViewController(_ url: String, parameters: [String:Any], navigationController: UINavigationController?) {
         if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
             navigation.show(viewController, sender: self)
         }
@@ -478,7 +481,7 @@ class CRNativeRouter: NSObject {
      - parameter parameters: additional parameters
      */
     @available(iOS 8.0, *)
-    func showViewController(_ url: String, parameters: [String:Any]? = nil) {
+    open func showViewController(_ url: String, parameters: [String:Any]? = nil) {
         if let curViewController = currentViewController(), let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
             curViewController.navigationController?.show(viewController, sender: self)
         }
@@ -491,7 +494,7 @@ class CRNativeRouter: NSObject {
      - parameter navigationController: navigation controller
      */
     @available(iOS, deprecated, message: "Deprecated, use showDetailViewController instead, no need to pass in navigation controller")
-    func navigationControllerShowDetailViewController(_ url: String, navigationController: UINavigationController?) {
+    open func navigationControllerShowDetailViewController(_ url: String, navigationController: UINavigationController?) {
         if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url) {
             navigation.showDetailViewController(viewController, sender: self)
         }
@@ -505,7 +508,7 @@ class CRNativeRouter: NSObject {
      - parameter navigationController: navigation controller
      */
     @available(iOS, deprecated, message: "Deprecated, use showDetailViewController instead, no need to pass in navigation controller")
-    func navigationControllerShowDetailViewController(_ url: String, parameters: [String:Any], navigationController: UINavigationController?) {
+    open func navigationControllerShowDetailViewController(_ url: String, parameters: [String:Any], navigationController: UINavigationController?) {
         if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
             navigation.showDetailViewController(viewController, sender: self)
         }
@@ -518,7 +521,7 @@ class CRNativeRouter: NSObject {
      - parameter parameters: additional parameters
      */
     @available(iOS 8.0, *)
-    func showDetailViewController(_ url: String, parameters: [String:Any]? = nil) {
+    open func showDetailViewController(_ url: String, parameters: [String:Any]? = nil) {
         if let curViewController = currentViewController(), let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
             curViewController.navigationController?.showDetailViewController(viewController, sender: self)
         }
@@ -531,7 +534,7 @@ class CRNativeRouter: NSObject {
      - parameter viewController: view controller
      */
     @available(iOS, deprecated, message: "Deprecated, use showModallyViewController instead, no need to pass in view controller")
-    func showModallyViewController(_ url: String, viewController: UIViewController) {
+    open func showModallyViewController(_ url: String, viewController: UIViewController) {
         if let vc = figureModuleViewControllerAndParameter(url) {
             viewController.modalPresentationStyle = .overCurrentContext
             viewController.modalTransitionStyle = .coverVertical
@@ -549,7 +552,7 @@ class CRNativeRouter: NSObject {
      - parameter parameters:           additional parameters
      */
     @available(iOS, deprecated, message: "Deprecated, use showModallyViewController instead, no need to pass in view controller")
-    func showModallyViewController(_ url: String, viewController: UIViewController, parameters: [String:Any]) {
+    open func showModallyViewController(_ url: String, viewController: UIViewController, parameters: [String:Any]) {
         if let vc = figureModuleViewControllerAndParameter(url, parameters: parameters) {
             viewController.modalPresentationStyle = .overCurrentContext
             viewController.modalTransitionStyle = .coverVertical
@@ -566,7 +569,7 @@ class CRNativeRouter: NSObject {
      - parameter parameters: additional parameters
      */
     @available(iOS 8.0, *)
-    func showModallyViewController(_ url: String, parameters: [String:Any]? = nil) {
+    open func showModallyViewController(_ url: String, parameters: [String:Any]? = nil) {
         if let curViewController = currentViewController(), let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
             curViewController.modalPresentationStyle = .overCurrentContext
             curViewController.modalTransitionStyle = .coverVertical
@@ -584,7 +587,7 @@ class CRNativeRouter: NSObject {
      - parameter sourceRect:     source area rect
      */
     @available(iOS, deprecated, message: "Deprecated, use popoverViewController instead, no need to pass in view controller")
-    func popoverViewController(_ url: String, viewController: UIViewController, sourceRect: CGRect) {
+    open func popoverViewController(_ url: String, viewController: UIViewController, sourceRect: CGRect) {
         if let vc = figureModuleViewControllerAndParameter(url), let popoverController = viewController.popoverPresentationController {
             viewController.navigationController?.modalPresentationStyle = .popover
             
@@ -604,7 +607,7 @@ class CRNativeRouter: NSObject {
      - parameter sourceRect:           source area rect
      */
     @available(iOS, deprecated, message: "Deprecated, use popoverViewController instead, no need to pass in view controller")
-    func popoverViewController(_ url: String, viewController: UIViewController, parameters: [String:Any], sourceRect: CGRect) {
+    open func popoverViewController(_ url: String, viewController: UIViewController, parameters: [String:Any], sourceRect: CGRect) {
         if let vc = figureModuleViewControllerAndParameter(url, parameters: parameters), let popoverController = viewController.popoverPresentationController {
             viewController.navigationController?.modalPresentationStyle = .popover
             
@@ -623,7 +626,7 @@ class CRNativeRouter: NSObject {
      - parameter parameters: additional parameters
      */
     @available(iOS 8.0, *)
-    func popoverViewController(_ url: String, sourceRect: CGRect, parameters: [String:Any]? = nil) {
+    open func popoverViewController(_ url: String, sourceRect: CGRect, parameters: [String:Any]? = nil) {
         if let curViewController = currentViewController(), let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
             guard let popoverController = curViewController.popoverPresentationController else { return }
             
