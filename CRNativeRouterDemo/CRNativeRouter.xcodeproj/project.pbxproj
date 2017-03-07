@@ -165,11 +165,11 @@
 					9DA769FD1D26421A00D21910 = {
 						CreatedOnToolsVersion = 7.3.1;
 						DevelopmentTeam = JS9P32U449;
-						LastSwiftMigration = 0810;
+						LastSwiftMigration = 0820;
 					};
 					9DA76A111D26421B00D21910 = {
 						CreatedOnToolsVersion = 7.3.1;
-						LastSwiftMigration = 0810;
+						LastSwiftMigration = 0820;
 						TestTargetID = 9DA769FD1D26421A00D21910;
 					};
 				};
