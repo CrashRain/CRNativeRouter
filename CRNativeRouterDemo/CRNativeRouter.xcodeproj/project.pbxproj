@@ -19,6 +19,7 @@
 		9DA76A0C1D26421B00D21910 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9DA76A0A1D26421B00D21910 /* LaunchScreen.storyboard */; };
 		9DA76A171D26421B00D21910 /* CRNativeRouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA76A161D26421B00D21910 /* CRNativeRouterTests.swift */; };
 		9DA76A221D26430000D21910 /* CRNativeRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA76A211D26430000D21910 /* CRNativeRouter.swift */; };
+		9DF8534E1E7BAF0400A170BB /* ViewController5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DF8534D1E7BAF0400A170BB /* ViewController5.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +49,7 @@
 		9DA76A161D26421B00D21910 /* CRNativeRouterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRNativeRouterTests.swift; sourceTree = "<group>"; };
 		9DA76A181D26421B00D21910 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9DA76A211D26430000D21910 /* CRNativeRouter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CRNativeRouter.swift; sourceTree = "<group>"; };
+		9DF8534D1E7BAF0400A170BB /* ViewController5.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController5.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,6 +97,7 @@
 				9D9E14631D2B7F30006459EA /* ViewController2.swift */,
 				9D53F4681D4099FF004FE794 /* ViewController3.swift */,
 				9D8B5DA11D4C72D10059E6C2 /* ViewController4.swift */,
+				9DF8534D1E7BAF0400A170BB /* ViewController5.swift */,
 				9DA76A051D26421B00D21910 /* Main.storyboard */,
 				9DA76A081D26421B00D21910 /* Assets.xcassets */,
 				9DA76A0A1D26421B00D21910 /* LaunchScreen.storyboard */,
@@ -226,6 +229,7 @@
 				9D9E14641D2B7F30006459EA /* ViewController2.swift in Sources */,
 				9DA76A221D26430000D21910 /* CRNativeRouter.swift in Sources */,
 				9DA76A021D26421B00D21910 /* AppDelegate.swift in Sources */,
+				9DF8534E1E7BAF0400A170BB /* ViewController5.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

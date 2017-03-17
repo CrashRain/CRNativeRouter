@@ -31,6 +31,10 @@ class ViewController: UIViewController {
     @IBAction func jumpToView4(_ sender: UIButton) {
         CRNativeRouter.sharedInstance().showModallyViewController("Medical://vc4.md?test=1&value=3")
     }
+    
+    @IBAction func jumpToView5(_ sender: UIButton) {
+        CRNativeRouter.sharedInstance().showModallyViewControllerInNavigation("Medical://vc5.md?test=1&temp=2", parameters: ["url": "www.crashrain.com"])
+    }
 }
 
 extension ViewController: CRNativeRouterProtocol {

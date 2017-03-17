@@ -5,6 +5,22 @@
 	<key>Modules</key>
 	<array>
 		<dict>
+			<key>identifier</key>
+			<string>ViewController5</string>
+			<key>parameters</key>
+			<array>
+				<string>temp</string>
+				<string>test</string>
+				<string>url</string>
+			</array>
+			<key>storyboard</key>
+			<string>Main</string>
+			<key>type</key>
+			<string>ViewController5</string>
+			<key>name</key>
+			<string>vc5.md</string>
+		</dict>
+		<dict>
 			<key>parameters</key>
 			<array>
 				<string>value</string>
