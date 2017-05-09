@@ -24,7 +24,7 @@ public protocol CRNativeRouterProtocol {
     func getParametersFromRouter(_ parameter: [String: Any])
 }
 
-open class CRNativeRouter: NSObject {
+public class CRNativeRouter: NSObject {
     
     private static var __once: () = {
                 Static.instance = CRNativeRouter()
