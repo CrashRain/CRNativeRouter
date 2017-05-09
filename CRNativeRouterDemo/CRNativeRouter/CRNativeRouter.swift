@@ -259,7 +259,7 @@ open class CRNativeRouter: NSObject {
      
      - returns: 当前显示的视图控制器
      */
-    fileprivate func currentViewController() -> UIViewController? {
+    open func currentViewController() -> UIViewController? {
         guard let rootViewController = UIApplication.shared.keyWindow?.rootViewController else { return nil }
         
         return recursionTopViewController(rootViewController)

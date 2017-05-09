@@ -259,7 +259,7 @@ open class CRNativeRouter: NSObject {
      
      - returns: 当前显示的视图控制器
      */
-    fileprivate func currentViewController() -> UIViewController? {
+    open func currentViewController() -> UIViewController? {
         guard let rootViewController = UIApplication.shared.keyWindow?.rootViewController else { return nil }
         
         return recursionTopViewController(rootViewController)
@@ -290,7 +290,6 @@ open class CRNativeRouter: NSObject {
      内部使用固定格式正则，暂不提供该接口
      
      - parameter format:                URL格式（正则表达式）
-     - parameter navigationController:  导航栏
      */
     open func setURLModifyFormat(_ format: String) {
         self.regularFormat = format
@@ -525,7 +524,7 @@ open class CRNativeRouter: NSObject {
      Show a view controller modally
      
      - parameter url:            URL
-     - parameter viewController: view controller
+     - parameter viewController: view controller where new one show from
      */
     open func showModallyViewController(_ url: String, fromViewController viewController: UIViewController) {
         if let vc = figureModuleViewControllerAndParameter(url) {
@@ -537,11 +536,29 @@ open class CRNativeRouter: NSObject {
         }
     }
     
+    
+    /// Show a view controller within navigation modally
+    ///
+    /// - Parameters:
+    ///   - url: URL
+    ///   - viewController: view controller where new one show from
+    open func showModallyViewControllerInNavigation(_ url: String, fromViewController viewController: UIViewController) {
+        if let vc = figureModuleViewControllerAndParameter(url) {
+            viewController.modalPresentationStyle = .overCurrentContext
+            viewController.modalTransitionStyle = .coverVertical
+            viewController.navigationController?.modalTransitionStyle = .coverVertical
+            
+            let navigationController = UINavigationController(rootViewController: vc)
+            
+            viewController.present(navigationController, animated: true, completion: nil)
+        }
+    }
+    
     /**
      Show a view controller modally
      
      - parameter url:                  URL
-     - parameter viewController:       view controller
+     - parameter viewController:       view controller where new one show from
      - parameter parameters:           additional parameters
      */
     open func showModallyViewController(_ url: String, fromViewController viewController: UIViewController, parameters: [String: Any]) {
@@ -551,6 +568,25 @@ open class CRNativeRouter: NSObject {
             viewController.navigationController?.modalTransitionStyle = .coverVertical
             
             viewController.present(vc, animated: true, completion: nil)
+        }
+    }
+    
+    
+    /// Show a view controller within navigation modally
+    ///
+    /// - Parameters:
+    ///   - url: URL
+    ///   - viewController: view controller where new one show from
+    ///   - parameters: additional parameters
+    open func showModallyViewControllerInNavigation(_ url: String, fromViewController viewController: UIViewController, parameters: [String: Any]) {
+        if let vc = figureModuleViewControllerAndParameter(url, parameters: parameters) {
+            viewController.modalPresentationStyle = .overCurrentContext
+            viewController.modalTransitionStyle = .coverVertical
+            viewController.navigationController?.modalTransitionStyle = .coverVertical
+            
+            let navigationController = UINavigationController(rootViewController: vc)
+            
+            viewController.present(navigationController, animated: true, completion: nil)
         }
     }
     
@@ -571,11 +607,29 @@ open class CRNativeRouter: NSObject {
         }
     }
     
+    /// Show a view controller within navigation modally
+    ///
+    /// - Parameters:
+    ///   - url: URL
+    ///   - parameters: additional parameters
+    @available(iOS 8.0, *)
+    open func showModallyViewControllerInNavigation(_ url: String, parameters: [String: Any]? = nil) {
+        if let curViewController = currentViewController(), let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
+            curViewController.modalPresentationStyle = .overCurrentContext
+            curViewController.modalTransitionStyle = .coverVertical
+            curViewController.navigationController?.modalTransitionStyle = .coverVertical
+            
+            let navigationController = UINavigationController(rootViewController: viewController)
+            
+            curViewController.present(navigationController, animated: true, completion: nil)
+        }
+    }
+    
     /**
      Pop over a new view controller
      
      - parameter url:            URL
-     - parameter viewController: view controller
+     - parameter viewController: view controller where new one show from
      - parameter sourceRect:     source area rect
      */
     open func popoverViewController(_ url: String, fromViewController viewController: UIViewController, sourceRect: CGRect) {
@@ -593,7 +647,7 @@ open class CRNativeRouter: NSObject {
      Pop over a new view controller
      
      - parameter url:                  URL
-     - parameter viewController:       view controller
+     - parameter viewController:       view controller where new one show from
      - parameter parameters:           additional parameters
      - parameter sourceRect:           source area rect
      */
