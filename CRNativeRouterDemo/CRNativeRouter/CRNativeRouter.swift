@@ -24,7 +24,7 @@ public protocol CRNativeRouterProtocol {
     func getParametersFromRouter(_ parameter: [String: Any])
 }
 
-public class CRNativeRouter: NSObject {
+open class CRNativeRouter: NSObject {
     
     private static var __once: () = {
                 Static.instance = CRNativeRouter()
@@ -273,9 +273,14 @@ public class CRNativeRouter: NSObject {
      - returns: 视图控制器
      */
     fileprivate func recursionTopViewController(_ rootViewController: UIViewController) -> UIViewController {
-        if rootViewController is UINavigationController {
-            let navigationController = rootViewController as! UINavigationController
-            return recursionTopViewController(navigationController.topViewController!)
+        if let navigationController = rootViewController as? UINavigationController, let topViewController = navigationController.topViewController {
+            return recursionTopViewController(topViewController)
+        } else if let tabBarController = rootViewController as? UITabBarController {
+            if let viewControllers = tabBarController.viewControllers {
+                return recursionTopViewController(viewControllers[tabBarController.selectedIndex])
+            } else {
+                return tabBarController
+            }
         }
         
         guard let presentedViewController = rootViewController.presentedViewController else { return rootViewController }
