@@ -24,6 +24,7 @@ public protocol CRNativeRouterProtocol {
     func getParametersFromRouter(_ parameter: [String: Any])
 }
 
+@objcMembers
 open class CRNativeRouter: NSObject {
     
     private static var __once: () = {
@@ -114,9 +115,7 @@ open class CRNativeRouter: NSObject {
             
             if components.count > 0 {
                 let tempRange = components[0].range
-                let range = url.characters.index(url.startIndex, offsetBy: tempRange.location + 3) ..< url.characters.index(url.startIndex, offsetBy: tempRange.location + tempRange.length)
-                
-                compResult[.module] = url.substring(with: range)
+                compResult[.module] = String(url[url.characters.index(url.startIndex, offsetBy: tempRange.location + 3) ..< url.characters.index(url.startIndex, offsetBy: tempRange.location + tempRange.length)])
             }
             
             // 分离参数
@@ -125,9 +124,7 @@ open class CRNativeRouter: NSObject {
             
             if components.count > 0 {
                 let tempRange = components[0].range
-                let range = url.characters.index(url.startIndex, offsetBy: tempRange.location + 1) ..< url.characters.index(url.startIndex, offsetBy: tempRange.location + tempRange.length)
-                
-                compResult[.parameters] = url.substring(with: range)
+                compResult[.parameters] = String(url[url.characters.index(url.startIndex, offsetBy: tempRange.location + 1) ..< url.characters.index(url.startIndex, offsetBy: tempRange.location + tempRange.length)])
             }
         } catch {
             // exception catched
@@ -417,10 +414,17 @@ open class CRNativeRouter: NSObject {
      - parameter url:                  URL
      - parameter navigationController: navigation controller
      */
-    open func navigationControllerPushViewController(_ url: String, navigationController: UINavigationController?) {
+    @available(iOS, deprecated: 8.0, message: "Up to iOS 8.0 deprecated, use show view controller instead")
+    open func navigationControllerPushViewController(_ url: String, navigationController: UINavigationController?, delegate: UINavigationControllerDelegate?) {
         if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url) {
+            navigation.delegate = delegate
             navigation.pushViewController(viewController, animated: true)
         }
+    }
+    
+    @available(iOS, deprecated: 8.0, message: "Up to iOS 8.0 deprecated, use show view controller instead")
+    open func navigationControllerPushViewController(_ url: String, navigationController: UINavigationController?) {
+        navigationControllerPushViewController(url, navigationController: navigationController, delegate: nil)
     }
     
     /**
@@ -430,10 +434,17 @@ open class CRNativeRouter: NSObject {
      - parameter parameters:           additional parameters
      - parameter navigationController: navigation controller
      */
-    open func navigationControllerPushViewController(_ url: String, parameters: [String: Any], navigationController: UINavigationController?) {
+    @available(iOS, deprecated: 8.0, message: "Up to iOS 8.0 deprecated, use show view controller instead")
+    open func navigationControllerPushViewController(_ url: String, parameters: [String: Any], navigationController: UINavigationController?, delegate: UINavigationControllerDelegate?) {
         if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
+            navigation.delegate = delegate
             navigation.pushViewController(viewController, animated: true)
         }
+    }
+    
+    @available(iOS, deprecated: 8.0, message: "Up to iOS 8.0 deprecated, use show view controller instead")
+    open func navigationControllerPushViewController(_ url: String, parameters: [String: Any], navigationController: UINavigationController?) {
+        navigationControllerPushViewController(url, parameters: parameters, navigationController: navigationController, delegate: nil)
     }
     
     /**
@@ -443,22 +454,35 @@ open class CRNativeRouter: NSObject {
      - parameter parameters: navigation controller
      */
     @available(iOS, deprecated: 8.0, message: "Up to iOS 8.0 deprecated, use show view controller instead")
-    open func pushViewController(_ url: String, parameters: [String: Any]? = nil) {
+    open func pushViewController(_ url: String, parameters: [String: Any]?, delegate: UINavigationControllerDelegate?) {
         if let curViewController = currentViewController(), let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
+            curViewController.navigationController?.delegate = delegate
             curViewController.navigationController?.pushViewController(viewController, animated: true)
         }
     }
     
+    @available(iOS, deprecated: 8.0, message: "Up to iOS 8.0 deprecated, use show view controller instead")
+    open func pushViewController(_ url: String, parameters: [String: Any]? = nil) {
+        pushViewController(url, parameters: parameters, delegate: nil)
+    }
+    
     /**
      Navigation controller show a new view controller
      
      - parameter url:                  URL
      - parameter navigationController: navigation controller
      */
-    open func navigationControllerShowViewController(_ url: String, navigationController: UINavigationController?) {
+    @available(iOS 8.0, *)
+    open func navigationControllerShowViewController(_ url: String, navigationController: UINavigationController?, delegate: UINavigationControllerDelegate?) {
         if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url) {
+            navigation.delegate = delegate
             navigation.show(viewController, sender: self)
         }
+    }
+    
+    @available(iOS 8.0, *)
+    open func navigationControllerShowViewController(_ url: String, navigationController: UINavigationController?) {
+        navigationControllerShowViewController(url, navigationController: navigationController, delegate: nil)
     }
     
     /**
@@ -468,10 +492,17 @@ open class CRNativeRouter: NSObject {
      - parameter parameters:           additional parameters
      - parameter navigationController: navigation controller
      */
-    open func navigationControllerShowViewController(_ url: String, parameters: [String: Any], navigationController: UINavigationController?) {
+    @available(iOS 8.0, *)
+    open func navigationControllerShowViewController(_ url: String, parameters: [String: Any], navigationController: UINavigationController?, delegate: UINavigationControllerDelegate?) {
         if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
+            navigation.delegate = delegate
             navigation.show(viewController, sender: self)
         }
+    }
+    
+    @available(iOS 8.0, *)
+    open func navigationControllerShowViewController(_ url: String, parameters: [String: Any], navigationController: UINavigationController?) {
+        navigationControllerShowViewController(url, parameters: parameters, navigationController: navigationController, delegate: nil)
     }
     
     /**
@@ -481,22 +512,35 @@ open class CRNativeRouter: NSObject {
      - parameter parameters: additional parameters
      */
     @available(iOS 8.0, *)
-    open func showViewController(_ url: String, parameters: [String: Any]? = nil) {
+    open func showViewController(_ url: String, parameters: [String: Any]?, delegate: UINavigationControllerDelegate?) {
         if let curViewController = currentViewController(), let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
+            curViewController.navigationController?.delegate = delegate
             curViewController.navigationController?.show(viewController, sender: self)
         }
     }
     
+    @available(iOS 8.0, *)
+    open func showViewController(_ url: String, parameters: [String: Any]? = nil) {
+        showViewController(url, parameters: parameters, delegate: nil)
+    }
+    
     /**
      Navigation controller show detail a new view controller
      
      - parameter url:                  URL
      - parameter navigationController: navigation controller
      */
-    open func navigationControllerShowDetailViewController(_ url: String, navigationController: UINavigationController?) {
+    @available(iOS 8.0, *)
+    open func navigationControllerShowDetailViewController(_ url: String, navigationController: UINavigationController?, delegate: UINavigationControllerDelegate?) {
         if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url) {
+            navigation.delegate = delegate
             navigation.showDetailViewController(viewController, sender: self)
         }
+    }
+    
+    @available(iOS 8.0, *)
+    open func navigationControllerShowDetailViewController(_ url: String, navigationController: UINavigationController?) {
+        navigationControllerShowDetailViewController(url, navigationController: navigationController, delegate: nil)
     }
     
     /**
@@ -506,10 +550,17 @@ open class CRNativeRouter: NSObject {
      - parameter parameters:           additional parameters
      - parameter navigationController: navigation controller
      */
-    open func navigationControllerShowDetailViewController(_ url: String, parameters: [String: Any], navigationController: UINavigationController?) {
+    @available(iOS 8.0, *)
+    open func navigationControllerShowDetailViewController(_ url: String, parameters: [String: Any], navigationController: UINavigationController?, delegate: UINavigationControllerDelegate?) {
         if let navigation = navigationController, let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
+            navigation.delegate = delegate
             navigation.showDetailViewController(viewController, sender: self)
         }
+    }
+    
+    @available(iOS 8.0, *)
+    open func navigationControllerShowDetailViewController(_ url: String, parameters: [String: Any], navigationController: UINavigationController?) {
+        navigationControllerShowDetailViewController(url, parameters: parameters, navigationController: navigationController, delegate: nil)
     }
     
     /**
@@ -519,10 +570,16 @@ open class CRNativeRouter: NSObject {
      - parameter parameters: additional parameters
      */
     @available(iOS 8.0, *)
-    open func showDetailViewController(_ url: String, parameters: [String: Any]? = nil) {
+    open func showDetailViewController(_ url: String, parameters: [String: Any]?, delegate: UINavigationControllerDelegate?) {
         if let curViewController = currentViewController(), let viewController = figureModuleViewControllerAndParameter(url, parameters: parameters) {
+            curViewController.navigationController?.delegate = delegate
             curViewController.navigationController?.showDetailViewController(viewController, sender: self)
         }
+    }
+    
+    @available(iOS 8.0, *)
+    open func showDetailViewController(_ url: String, parameters: [String: Any]? = nil ) {
+        showDetailViewController(url, parameters: parameters, delegate: nil)
     }
     
     /**
