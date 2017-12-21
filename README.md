@@ -107,4 +107,6 @@ Router需要一个Internal URL来辨识需要显示的界面和要传递的参�
 同时也支持是否传入当前navigation的选项，如果不传入则会递归查找当前显示的navigation，建议传入减少性能开销。
 
 ###4、统跳原理
-敬请期待下回分解
+欢迎访问我的私人Blog [CRNativeRouter原理](http://crashrain.com/?p=259)
+
+
