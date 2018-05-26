@@ -59,7 +59,7 @@ open class CRNativeRouter: NSObject {
     fileprivate var mapParameters: [String:[String]] = [:]
     
     // 预设的URL匹配正则表达式
-    fileprivate var regularFormat = "^(Medical://)(\\w+\\.md)(\\?(([a-zA-Z]+\\w*=\\w+)(&[a-zA-Z]+\\w*=\\w+)*)|([a-zA-Z]+\\w*=\\w+))?$"
+    fileprivate var regularFormat = "^(Module://)(\\w+\\.md)(\\?(([a-zA-Z]+\\w*=\\w+)(&[a-zA-Z]+\\w*=\\w+)*)|([a-zA-Z]+\\w*=\\w+))?$"
     
     // 单例
     fileprivate struct Static {
@@ -94,7 +94,7 @@ open class CRNativeRouter: NSObject {
      
      - returns: 比较结果
      */
-    fileprivate func judgeUrlAvailable(_ url: String) -> Bool {
+    open func judgeUrlAvailable(_ url: String) -> Bool {
         return url ~= regularFormat
     }
     
@@ -204,9 +204,9 @@ open class CRNativeRouter: NSObject {
         components.forEach { item in
             let refs = item.components(separatedBy: "=")
             
-            if let intValue = Int(refs[1]) {
+            if let intValue = Int(refs[1]), "\(intValue)" == refs[1] {
                 params[refs[0]] = intValue
-            } else if let doubleValue = Double(refs[1]) {
+            } else if let doubleValue = Double(refs[1]), "\(doubleValue)" == refs[1] {
                 params[refs[0]] = doubleValue
             } else {
                 params[refs[0]] = refs[1]
