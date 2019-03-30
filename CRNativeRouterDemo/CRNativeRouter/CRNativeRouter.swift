@@ -11,8 +11,7 @@ import UIKit
 func ~= (lhs: String, rhs: String) -> Bool {
     var match = false
     
-    if let result = try? NSRegularExpression(pattern: rhs, options: .caseInsensitive).firstMatch(in: lhs, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSRange(location: 0, length: lhs.count)) {
-        
+    if let result = ((try? NSRegularExpression(pattern: rhs, options: .caseInsensitive).firstMatch(in: lhs, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSRange(location: 0, length: lhs.count))) as NSTextCheckingResult??) {
         match = (result != nil)
     }
     
