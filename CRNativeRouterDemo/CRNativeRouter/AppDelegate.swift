@@ -17,12 +17,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-        CRNativeRouter.sharedInstance().setURLModifyFormat("^(Medical://)(\\w+\\.md)(\\?(([a-zA-Z]+\\w*=\\w+)(&[a-zA-Z]+\\w*=\\w+)*)|([a-zA-Z]+\\w*=\\w+))?$")
+    CRNativeRouter.sharedInstance().setURLModifyFormat("^(Medical://)(\\w+\\.md)(\\?(([a-zA-Z]+\\w*=\\w+)(&[a-zA-Z]+\\w*=\\w+)*)|([a-zA-Z]+\\w*=\\w+))?$")
         
-        CRNativeRouter.sharedInstance().registerModulesFromDeveloperGroupConfiguration("NativeRouterGroup")
+        CRNativeRouter.sharedInstance().registerGroupModules(fromConfiguration: "NativeRouterGroup")
         
-        _ = CRNativeRouter.sharedInstance().registerNewModule("vc.md", type: ViewController.self, storyboard: "Main", identifier: "ViewController", parameters: nil)
-        _ = CRNativeRouter.sharedInstance().registerNewModule("vc2.md", type: ViewController2.self, storyboard: "Main", identifier: "ViewController2", parameters: ["temp", "test", "url"])
+        CRNativeRouter.sharedInstance().registerModule("vc.md", type: ViewController.self, storyboard: "Main", identifier: "ViewController", parameters: nil)
+        CRNativeRouter.sharedInstance().registerModule("vc2.md", type: ViewController2.self, storyboard: "Main", identifier: "ViewController2", parameters: ["temp", "test", "url"])
         
         return true
     }
