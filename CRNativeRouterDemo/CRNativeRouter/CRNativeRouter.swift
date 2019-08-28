@@ -23,11 +23,16 @@ public protocol CRNativeRouterProtocol {
     func getParametersFromRouter(_ parameter: [String: Any])
 }
 
-public class CRNativeRouter: NSObject {
+public struct CRNativeRouterPresentParam {
     
-    private static var __once: () = {
-        Static.instance = CRNativeRouter()
-    }()
+    var presentationStyle = UIModalPresentationStyle.overCurrentContext
+    var transitionStyle = UIModalTransitionStyle.coverVertical
+    var navTransitionStyle = UIModalTransitionStyle.coverVertical
+    
+    public init() {}
+}
+
+public class CRNativeRouter: NSObject {
     
     // 视图控制器类型枚举
     private enum CRNativeRouterViewControllerType {
@@ -49,9 +54,6 @@ public class CRNativeRouter: NSObject {
         case parameters = "CRNativeRouterParametersKey"
     }
     
-    // 导航栏
-//    private var navigationController: UINavigationController
-    
     // 映射关系
     private var mapClass: [String:CRNativeRouterViewControllerType] = [:]
     private var mapParameters: [String:[String]] = [:]
@@ -64,17 +66,26 @@ public class CRNativeRouter: NSObject {
         static var instance: CRNativeRouter! = nil
     }
     
+    private static var __once: () = {
+        Static.instance = CRNativeRouter()
+    }()
+    
     /**
      实例返回函数
      
      - returns: 类实例
      */
-    public class func sharedInstance() -> CRNativeRouter {
+    public class var shared: CRNativeRouter! {
         if Static.instance == nil {
             _ = CRNativeRouter.__once
         }
         
         return Static.instance
+    }
+    
+    @available(iOS, deprecated: 8.0, message: "Use shared instead")
+    public class func sharedInstance() -> CRNativeRouter! {
+        return shared
     }
     
     /**
@@ -422,13 +433,13 @@ public class CRNativeRouter: NSObject {
         return viewController
     }
     
-    @discardableResult public func present(_ url: String, parameters: [String: Any]? = nil, from current: UIViewController? = nil, inNavigation: Bool = false) -> UIViewController? {
+    @discardableResult public func present(_ url: String, parameters: [String: Any]? = nil, from current: UIViewController? = nil, inNavigation: Bool = false, params: CRNativeRouterPresentParam = .init()) -> UIViewController? {
         guard let viewController = configureModule(url, parameters: parameters) else { return nil }
         guard let from = current ?? currentViewController() else { return nil }
         
-        from.modalPresentationStyle = .overCurrentContext
-        from.modalTransitionStyle = .coverVertical
-        from.navigationController?.modalTransitionStyle = .coverVertical
+        from.modalPresentationStyle = params.presentationStyle
+        from.modalTransitionStyle = params.transitionStyle
+        from.navigationController?.modalTransitionStyle = params.navTransitionStyle
         from.present(inNavigation ? UINavigationController(rootViewController: viewController) : viewController, animated: true, completion: nil)
         
         return viewController
