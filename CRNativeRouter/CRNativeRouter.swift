@@ -18,18 +18,14 @@ func ~= (lhs: String, rhs: String) -> Bool {
     return match
 }
 
-@objc
-public protocol CRNativeRouterProtocol {
+@objc public protocol CRNativeRouterProtocol {
     func getParametersFromRouter(_ parameter: [String: Any])
 }
 
-public struct CRNativeRouterPresentParam {
-    
+@objc public class CRNativeRouterPresentParam: NSObject {
     var presentationStyle = UIModalPresentationStyle.overCurrentContext
     var transitionStyle = UIModalTransitionStyle.coverVertical
     var navTransitionStyle = UIModalTransitionStyle.coverVertical
-    
-    public init() {}
 }
 
 public class CRNativeRouter: NSObject {
@@ -55,8 +51,8 @@ public class CRNativeRouter: NSObject {
     }
     
     // 映射关系
-    private var mapClass: [String:CRNativeRouterViewControllerType] = [:]
-    private var mapParameters: [String:[String]] = [:]
+    private var mapClass: [String: CRNativeRouterViewControllerType] = [:]
+    private var mapParameters: [String: [String]] = [:]
     
     // 预设的URL匹配正则表达式
     private var regularFormat = "^(Module://)(\\w+\\.md)(\\?(([a-zA-Z]+\\w*=\\w+)(&[a-zA-Z]+\\w*=\\w+)*)|([a-zA-Z]+\\w*=\\w+))?$"
@@ -75,7 +71,7 @@ public class CRNativeRouter: NSObject {
      
      - returns: 类实例
      */
-    public class var shared: CRNativeRouter! {
+    @objc public class var shared: CRNativeRouter! {
         if Static.instance == nil {
             _ = CRNativeRouter.__once
         }
@@ -84,7 +80,7 @@ public class CRNativeRouter: NSObject {
     }
     
     @available(iOS, deprecated: 8.0, message: "Use shared instead")
-    public class func sharedInstance() -> CRNativeRouter! {
+    @objc public class func sharedInstance() -> CRNativeRouter! {
         return shared
     }
     
@@ -433,7 +429,7 @@ public class CRNativeRouter: NSObject {
         return viewController
     }
     
-    @discardableResult public func present(_ url: String, parameters: [String: Any]? = nil, from current: UIViewController? = nil, inNavigation: Bool = false, params: CRNativeRouterPresentParam = .init()) -> UIViewController? {
+    @discardableResult @objc public func present(_ url: String, parameters: [String: Any]? = nil, from current: UIViewController? = nil, inNavigation: Bool = false, params: CRNativeRouterPresentParam = .init()) -> UIViewController? {
         guard let viewController = configureModule(url, parameters: parameters) else { return nil }
         guard let from = current ?? currentViewController() else { return nil }
         
@@ -445,7 +441,7 @@ public class CRNativeRouter: NSObject {
         return viewController
     }
     
-    @discardableResult public func popover(_ url: String, parameters: [String: Any]? = nil, from current: UIViewController? = nil, sourceRect: CGRect) -> UIViewController? {
+    @discardableResult @objc public func popover(_ url: String, parameters: [String: Any]? = nil, from current: UIViewController? = nil, sourceRect: CGRect) -> UIViewController? {
         guard let viewController = configureModule(url, parameters: parameters) else { return nil }
         guard let from = current ?? currentViewController() else { return nil }
         guard let popoverController = from.popoverPresentationController else { return nil }
@@ -459,12 +455,12 @@ public class CRNativeRouter: NSObject {
     }
     
     @discardableResult
-    public func show(_ url: String, parameters: [String: Any]? = nil, navigation: UINavigationController? = nil, delegate: UINavigationControllerDelegate? = nil) -> UIViewController? {
+    @objc public func show(_ url: String, parameters: [String: Any]? = nil, navigation: UINavigationController? = nil, delegate: UINavigationControllerDelegate? = nil) -> UIViewController? {
         return showViewController(url, parameters: parameters, pushTo: navigation, delegate: delegate)
     }
     
     @discardableResult
-    public func showDetail(_ url: String, parameters: [String: Any]? = nil, navigation: UINavigationController? = nil, delegate: UINavigationControllerDelegate? = nil) -> UIViewController? {
+    @objc public func showDetail(_ url: String, parameters: [String: Any]? = nil, navigation: UINavigationController? = nil, delegate: UINavigationControllerDelegate? = nil) -> UIViewController? {
         return showViewController(url, parameters: parameters, pushTo: navigation, delegate: delegate, type: .showDetail)
     }
     
