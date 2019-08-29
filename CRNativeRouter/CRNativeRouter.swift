@@ -8,24 +8,51 @@
 
 import UIKit
 
-func ~= (lhs: String, rhs: String) -> Bool {
-    var match = false
-    
+private func ~= (lhs: String, rhs: String) -> Bool {
     if let result = ((try? NSRegularExpression(pattern: rhs, options: .caseInsensitive).firstMatch(in: lhs, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSRange(location: 0, length: lhs.count))) as NSTextCheckingResult??) {
-        match = (result != nil)
+        return result != nil
     }
     
-    return match
+    return false
 }
 
-@objc public protocol CRNativeRouterProtocol {
-    func getParametersFromRouter(_ parameter: [String: Any])
-}
-
-@objc public class CRNativeRouterPresentParam: NSObject {
+@objc public class CRNativeRouterPresentOptions: NSObject {
     var presentationStyle = UIModalPresentationStyle.overCurrentContext
     var transitionStyle = UIModalTransitionStyle.coverVertical
     var navTransitionStyle = UIModalTransitionStyle.coverVertical
+}
+
+@dynamicMemberLookup
+public struct CRNativeRouterParamT<Key, Value> where Key: Hashable & ExpressibleByStringLiteral {
+    var wrappedValue: [Key: Value] = [:]
+    
+    init(dict: [Key: Value]) {
+        wrappedValue = dict
+    }
+    
+    subscript(key: Key) -> Value? {
+        get {
+            return wrappedValue[key]
+        }
+        set {
+            wrappedValue[key] = newValue
+        }
+    }
+    
+    subscript(dynamicMember key: Key) -> Value? {
+        return wrappedValue[key]
+    }
+}
+
+public typealias CRNativeRouterParam = CRNativeRouterParamT<String, Any>
+
+// Use it only for Objective-C
+@objc public protocol CRNativeRouterProtocol: class {
+    func getParametersFromRouter(_ parameter: [String: Any])
+}
+
+public protocol CRNativeRouterDelegate {
+    func getParameters(from router: CRNativeRouter, parameters: CRNativeRouterParam)
 }
 
 public class CRNativeRouter: NSObject {
@@ -82,24 +109,6 @@ public class CRNativeRouter: NSObject {
     @available(iOS, deprecated: 8.0, message: "Use shared instead")
     @objc public class func sharedInstance() -> CRNativeRouter! {
         return shared
-    }
-    
-    /**
-     初始化函数
-     */
-    public required override init() {
-        super.init()
-    }
-    
-    /**
-     判断URL是否符合预设的正则表达式
-     
-     - parameter url: URL
-     
-     - returns: 比较结果
-     */
-    public func judgeUrlAvailable(_ url: String) -> Bool {
-        return url ~= regularFormat
     }
     
     /**
@@ -170,14 +179,12 @@ public class CRNativeRouter: NSObject {
      - returns: 校验结果
      */
     private func viewControllerParametersCheck(_ module: String, parameter: String, paramDict: [String: Any]? = nil) -> Bool {
-        guard let requiredList = mapParameters[module] else { return false }
+        guard let requiredList = mapParameters[module], requiredList.count > 0 else { return true }
         
         let components = parameter.components(separatedBy: "&")
         var params = Set<String>()
         
-        components.forEach { item in
-            params.insert(item.components(separatedBy: "=")[0])
-        }
+        components.forEach { params.insert($0.components(separatedBy: "=")[0]) }
         
         if let additionalParams = paramDict {
             params.formUnion(Set<String>(additionalParams.keys))
@@ -188,7 +195,7 @@ public class CRNativeRouter: NSObject {
                 return false
             }
         }
-        
+                
         return true
     }
     
@@ -218,7 +225,7 @@ public class CRNativeRouter: NSObject {
         }
         
         if let additionalParam = paramDict {
-            params.merge(additionalParam) { (old, new) -> Any in new }
+            params.merge(additionalParam) { (_, new) -> Any in new }
         }
         
         return params
@@ -232,25 +239,26 @@ public class CRNativeRouter: NSObject {
      - returns: 视图控制器
      */
     private func configureModule(_ url: String, parameters: [String: Any]? = nil) -> UIViewController? {
-        guard judgeUrlAvailable(url) else { return nil }
+        guard url ~= regularFormat else { return nil }
         
         let components = divideComponentsFromUrl(url)
         guard let module = components[.module] else { return nil }
         let parameterStr = components[.parameters] ?? ""
         
-        if viewControllerParametersCheck(module, parameter: parameterStr, paramDict: parameters), let viewController = reflectViewController(module) {
-            if mapParameters[module]!.count != 0 && !(viewController is CRNativeRouterProtocol) {
-                return nil
-            }
-            
-            if viewController is CRNativeRouterProtocol {
-                (viewController as! CRNativeRouterProtocol).getParametersFromRouter(viewControllerParameterGenerate(parameterStr, paramDict: parameters))
-            }
-            
-            return viewController
+        guard viewControllerParametersCheck(module, parameter: parameterStr, paramDict: parameters), let viewController = reflectViewController(module) else { return nil }
+        
+        if let p = mapParameters[module], p.count > 0 && !(viewController is CRNativeRouterProtocol || viewController is CRNativeRouterDelegate) {
+            return nil
         }
         
-        return nil
+        let paramDict = viewControllerParameterGenerate(parameterStr, paramDict: parameters)
+        if viewController is CRNativeRouterDelegate {
+            (viewController as! CRNativeRouterDelegate).getParameters(from: self, parameters: CRNativeRouterParam(dict: paramDict))
+        } else if viewController is CRNativeRouterProtocol {
+            (viewController as! CRNativeRouterProtocol).getParametersFromRouter(paramDict)
+        }
+        
+        return viewController
     }
     
     /**
@@ -415,7 +423,8 @@ public class CRNativeRouter: NSObject {
      - parameter navigationController: navigation controller
      - parameter delegate: navigation controller delegate
     */
-    @discardableResult private func showViewController(_ url: String, parameters: [String: Any]? = nil, pushTo navigation: UINavigationController? = nil, delegate: UINavigationControllerDelegate? = nil, type: CRNativeRouterViewPresentType = .show) -> UIViewController? {
+    @discardableResult
+    private func showViewController(_ url: String, parameters: [String: Any]? = nil, pushTo navigation: UINavigationController? = nil, delegate: UINavigationControllerDelegate? = nil, type: CRNativeRouterViewPresentType = .show) -> UIViewController? {
         guard let viewController = configureModule(url, parameters: parameters) else { return nil }
         guard let navigationController = navigation ?? currentViewController()?.navigationController else { return nil }
         
@@ -429,7 +438,8 @@ public class CRNativeRouter: NSObject {
         return viewController
     }
     
-    @discardableResult @objc public func present(_ url: String, parameters: [String: Any]? = nil, from current: UIViewController? = nil, inNavigation: Bool = false, params: CRNativeRouterPresentParam = .init()) -> UIViewController? {
+    @discardableResult
+    @objc public func present(_ url: String, parameters: [String: Any]? = nil, from current: UIViewController? = nil, inNavigation: Bool = false, params: CRNativeRouterPresentOptions = .init()) -> UIViewController? {
         guard let viewController = configureModule(url, parameters: parameters) else { return nil }
         guard let from = current ?? currentViewController() else { return nil }
         
@@ -441,7 +451,8 @@ public class CRNativeRouter: NSObject {
         return viewController
     }
     
-    @discardableResult @objc public func popover(_ url: String, parameters: [String: Any]? = nil, from current: UIViewController? = nil, sourceRect: CGRect) -> UIViewController? {
+    @discardableResult
+    @objc public func popover(_ url: String, parameters: [String: Any]? = nil, from current: UIViewController? = nil, sourceRect: CGRect) -> UIViewController? {
         guard let viewController = configureModule(url, parameters: parameters) else { return nil }
         guard let from = current ?? currentViewController() else { return nil }
         guard let popoverController = from.popoverPresentationController else { return nil }

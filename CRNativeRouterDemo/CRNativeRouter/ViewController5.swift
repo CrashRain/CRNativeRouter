@@ -44,10 +44,10 @@ class ViewController5: UIViewController {
     }
 }
 
-extension ViewController5: CRNativeRouterProtocol {
-    func getParametersFromRouter(_ parameter: [String : Any]) {
-        url = parameter["url"] as! String
-        temp = parameter["temp"] as! Int
-        test = parameter["test"] as! Int
+extension ViewController5: CRNativeRouterDelegate {
+    func getParameters(from router: CRNativeRouter, parameters: CRNativeRouterParam) {
+        url = parameters.url as? String ?? ""
+        temp = parameters.temp as? Int ?? 0
+        test = parameters.test as? Int ?? 0
     }
 }
