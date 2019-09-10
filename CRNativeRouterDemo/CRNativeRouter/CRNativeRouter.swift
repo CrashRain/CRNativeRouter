@@ -190,13 +190,7 @@ public class CRNativeRouter: NSObject {
             params.formUnion(Set<String>(additionalParams.keys))
         }
         
-        for item in requiredList {
-            if !params.contains(item) {
-                return false
-            }
-        }
-                
-        return true
+        return Set(requiredList).intersection(params).count == requiredList.count
     }
     
     /**
