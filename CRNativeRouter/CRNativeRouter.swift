@@ -19,7 +19,6 @@ private func ~= (lhs: String, rhs: String) -> Bool {
 @objc public class CRNativeRouterPresentOptions: NSObject {
     var presentationStyle = UIModalPresentationStyle.overCurrentContext
     var transitionStyle = UIModalTransitionStyle.coverVertical
-    var navTransitionStyle = UIModalTransitionStyle.coverVertical
 }
 
 @dynamicMemberLookup
@@ -437,10 +436,10 @@ public class CRNativeRouter: NSObject {
         guard let viewController = configureModule(url, parameters: parameters) else { return nil }
         guard let from = current ?? currentViewController() else { return nil }
         
-        from.modalPresentationStyle = params.presentationStyle
-        from.modalTransitionStyle = params.transitionStyle
-        from.navigationController?.modalTransitionStyle = params.navTransitionStyle
-        from.present(inNavigation ? UINavigationController(rootViewController: viewController) : viewController, animated: true, completion: nil)
+        let newViewController = inNavigation ? (viewController.navigationController ?? UINavigationController(rootViewController: viewController)) : viewController
+        newViewController.modalPresentationStyle = params.presentationStyle
+        newViewController.modalTransitionStyle = params.transitionStyle
+        from.present(newViewController, animated: true, completion: nil)
         
         return viewController
     }
@@ -451,10 +450,12 @@ public class CRNativeRouter: NSObject {
         guard let from = current ?? currentViewController() else { return nil }
         guard let popoverController = from.popoverPresentationController else { return nil }
         
-        from.navigationController?.modalPresentationStyle = .popover
+        viewController.navigationController?.modalPresentationStyle = .popover
+        viewController.modalPresentationStyle = .popover
+        
         popoverController.sourceView = from.view
         popoverController.sourceRect = sourceRect
-        from.present(viewController, animated: true, completion: nil)
+        from.present(viewController.navigationController ?? viewController, animated: true, completion: nil)
         
         return viewController
     }
