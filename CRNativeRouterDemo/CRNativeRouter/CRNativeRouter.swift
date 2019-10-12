@@ -183,7 +183,7 @@ public class CRNativeRouter: NSObject {
         let components = parameter.components(separatedBy: "&")
         var params = Set<String>()
         
-        components.forEach { params.insert($0.components(separatedBy: "=")[0]) }
+        components.filter { $0.count > 0 }.forEach { params.insert($0.components(separatedBy: "=")[0]) }
         
         if let additionalParams = paramDict {
             params.formUnion(Set<String>(additionalParams.keys))
