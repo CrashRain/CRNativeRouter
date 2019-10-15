@@ -84,28 +84,9 @@ public class CRNativeRouter: NSObject {
     private var regularFormat = "^(Module://)(\\w+\\.md)(\\?(([a-zA-Z]+\\w*=\\w+)(&[a-zA-Z]+\\w*=\\w+)*)|([a-zA-Z]+\\w*=\\w+))?$"
     
     // 单例
-    private struct Static {
-        static var instance: CRNativeRouter! = nil
-    }
+    public static let shared = CRNativeRouter()
     
-    private static var __once: () = {
-        Static.instance = CRNativeRouter()
-    }()
-    
-    /**
-     实例返回函数
-     
-     - returns: 类实例
-     */
-    @objc public class var shared: CRNativeRouter! {
-        if Static.instance == nil {
-            _ = CRNativeRouter.__once
-        }
-        
-        return Static.instance
-    }
-    
-    @available(iOS, deprecated: 8.0, message: "Use shared instead")
+    @available(iOS, deprecated, message: "Use shared instead")
     @objc public class func sharedInstance() -> CRNativeRouter! {
         return shared
     }
