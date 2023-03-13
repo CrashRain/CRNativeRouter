@@ -45,8 +45,7 @@ public struct CRNativeRouterParamT<Key, Value> where Key: Hashable & Expressible
 
 public typealias CRNativeRouterParam = CRNativeRouterParamT<String, Any>
 
-// Use it only for Objective-C
-@objc public protocol CRNativeRouterProtocol: class {
+public protocol CRNativeRouterProtocol: NSObjectProtocol {
     func getParametersFromRouter(_ parameter: [String: Any])
 }
 
