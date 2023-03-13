@@ -353,8 +353,15 @@ public class CRNativeRouter: NSObject {
      */
     public func registerModules(fromConfiguration configuration: String) {
         guard let plistPath = Bundle.main.path(forResource: configuration, ofType: "plist") else { return }
-        guard let modulesDict = NSDictionary(contentsOfFile: plistPath) else { return }
-        guard let modules = modulesDict["Modules"] as? [[String:Any]] else { return }
+        
+        var modules: [[String: Any]]?
+        if let dict = NSDictionary(contentsOfFile: plistPath) {
+            modules = dict["Modules"] as? [[String:Any]]
+        } else if let array = NSArray(contentsOfFile: plistPath), let arr = array as? [[String: Any]] {
+            modules = arr
+        }
+        
+        guard let modules, !modules.isEmpty else { return }
         
         modules.forEach { module in
             guard let name = module["name"] as? String else { return }
